@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   backend:
     build:
@@ -8,9 +10,12 @@ services:
     depends_on:
       - db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/cnot_connect
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/cnot_connect?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: cnot123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL8Dialect
     entrypoint: ["dockerize", "-wait", "tcp://db:3306", "-timeout", "60s", "java", "-jar", "target/CnotConnect-1-0.0.1-SNAPSHOT.jar"]
 
   db:
