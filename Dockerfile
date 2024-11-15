@@ -18,13 +18,14 @@ COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 
-RUN chmod +x ./mvnw
+
 # Install dependencies (download dependencies offline)
 RUN ./mvnw dependency:go-offline
 
 # Copy the entire project into the container
 COPY . .
 
+RUN chmod +x ./mvnw
 # Package the Spring Boot application using Maven (skip tests)
 RUN ./mvnw clean package -DskipTests
 
