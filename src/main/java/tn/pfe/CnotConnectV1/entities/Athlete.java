@@ -76,7 +76,7 @@ public class Athlete implements Serializable {
 
     private Integer cin;
 
-    // Bidirectional relationship with Delegation
+ 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delegation_id")
     @JsonIgnore
@@ -94,12 +94,12 @@ public class Athlete implements Serializable {
     @OneToOne(mappedBy = "athlete", cascade = CascadeType.ALL, orphanRemoval = true)
     private User user;
 
-    // One-to-many relationship with Document
+    
     @OneToMany(mappedBy = "athlete", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Set<Document> documents = new HashSet<>();
 
-    // One-to-many relationship with PerformanceMetrics
+    
     @OneToMany(mappedBy = "athlete", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<PerformanceMetrics> performanceMetrics = new ArrayList<>();
@@ -107,7 +107,8 @@ public class Athlete implements Serializable {
     @OneToMany(mappedBy = "athlete")
     @JsonManagedReference
     private List<Mail> mails;
-    // Constructor for basic attributes
+  
+    
     public Athlete(String username, String email, String password) {
         this.username = username;
         this.email = email;
@@ -116,7 +117,7 @@ public class Athlete implements Serializable {
 
     // Method to add PerformanceMetrics with linking
     public void addPerformanceMetrics(PerformanceMetrics metrics) {
-        metrics.setAthlete(this); // Set the linking reference
+        metrics.setAthlete(this); 
         performanceMetrics.add(metrics);
     }
     
@@ -124,8 +125,8 @@ public class Athlete implements Serializable {
         if (federation == null) {
             throw new IllegalArgumentException("Federation cannot be null.");
         }
-        this.federation = federation; // Set the federation for the athlete
-        federation.addAthlete(this); // Add the athlete to the federation's list
+        this.federation = federation; 
+        federation.addAthlete(this); 
     }
     /**
      * Adds the athlete to a game.
@@ -136,8 +137,8 @@ public class Athlete implements Serializable {
         if (game == null) {
             throw new IllegalArgumentException("Game cannot be null.");
         }
-        this.setGame(game); // Set the game for the athlete
-        game.addAthlete(this); // Add the athlete to the game's list of athletes
+        this.setGame(game); 
+        game.addAthlete(this); 
     }
     
     /**
@@ -145,8 +146,8 @@ public class Athlete implements Serializable {
      */
     public void leaveGame() {
         if (this.game != null) {
-            this.game.removeAthlete(this); // Remove the athlete from the current game's list of athletes
-            this.game = null; // Clear the game reference for the athlete
+            this.game.removeAthlete(this); 
+            this.game = null; 
         }
     }
     

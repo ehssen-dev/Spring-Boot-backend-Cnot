@@ -11,7 +11,7 @@ import tn.pfe.CnotConnectV1.enums.Qualification;
 @Setter
 public class MailRequest {
     private Long mailId;
-    private String senderEmail; // New field for sender email
+    private String senderEmail; 
     private String recipient;
     private String subject;
     private String content;

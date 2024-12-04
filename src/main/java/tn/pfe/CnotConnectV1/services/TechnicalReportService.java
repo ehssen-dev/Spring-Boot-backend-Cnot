@@ -92,7 +92,7 @@ public class TechnicalReportService implements 	ITechnicalReportService {
 
         // Save and convert to DTO
         TechnicalReport savedReport = technicalReportRepository.save(report);
-        return convertToDTO(savedReport);  // Implement this method
+        return convertToDTO(savedReport);  
     }
     private TechnicalReportDTO convertToDTO(TechnicalReport report) {
         TechnicalReportDTO dto = new TechnicalReportDTO();
@@ -100,7 +100,7 @@ public class TechnicalReportService implements 	ITechnicalReportService {
         dto.setReportDate(report.getReportDate());
         dto.setReportPeriod(report.getReportPeriod());
         dto.setReportType(report.getReportType());
-        // Do not include the project field
+        
         return dto;
     }
 

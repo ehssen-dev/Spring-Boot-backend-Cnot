@@ -65,7 +65,6 @@ public class DepartmentService implements IDepartmentService {
         Department department = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new DepartmentNotFoundException("Department with id " + departmentId + " not found"));
         
-        // Optionally delete related entities here if needed
         departmentRepository.delete(department);
     }
 }

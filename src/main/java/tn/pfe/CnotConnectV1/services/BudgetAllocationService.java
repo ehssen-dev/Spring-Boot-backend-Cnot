@@ -79,13 +79,10 @@ public class BudgetAllocationService implements IBudgetAllocationService{
         BudgetAllocation budgetAllocation = new BudgetAllocation();
         budgetAllocation.setAllocatedAmount(dto.getAllocatedAmount());
         
-        // Set usedBudget to 0
         budgetAllocation.setUsedBudget(0.0);
 
-        // Set remainingBudget to allocatedAmount
         budgetAllocation.setRemainingBudget(dto.getAllocatedAmount());
         
-        // Generate a unique budget number
         String generatedBudgetNumber = generateBudgetNumber();
         budgetAllocation.setBudgetNumber(generatedBudgetNumber);
         
@@ -140,48 +137,40 @@ public class BudgetAllocationService implements IBudgetAllocationService{
 	 @Override
 	 @Transactional
 	 public BudgetAllocation allocateBudgetB(BudgetAllocationDTO dto) {
-	     // Fetch existing BudgetAllocation
 	     BudgetAllocation budgetAllocation = budgetAllocationRepository.findById(dto.getBudgetId())
 	             .orElseThrow(() -> new IllegalArgumentException("Budget allocation not found with id: " + dto.getBudgetId()));
 
-	     // Fetch associated ProcurementRequest and Project
 	     ProcurementRequest procurementRequest = procurementRequestService.findProcurementRequestById(dto.getRequestId());
 	     Project project = projectService.getProjectById(dto.getProjectId());
 
-	     // Set the project in the procurement request if not already set
 	     if (procurementRequest.getProject() == null) {
 	         procurementRequest.setProject(project);
 	     }
 
-	     // Set the ProcurementRequest and Project in BudgetAllocation
 	     budgetAllocation.setProcurementRequest(procurementRequest);
 	     budgetAllocation.setProject(project);
 
-	     // Update and save the BudgetAllocation
 	     return budgetAllocationRepository.save(budgetAllocation);
 	 }
 
 	 @Override
 	 @Transactional
 	 public BudgetAllocation allocateBudget(Long budgetId, BudgetAllocationDTO dto) {
-	     // Fetch existing BudgetAllocation
+	     
 	     BudgetAllocation budgetAllocation = budgetAllocationRepository.findById(budgetId)
 	             .orElseThrow(() -> new IllegalArgumentException("Budget allocation not found with id: " + budgetId));
 
-	     // Fetch associated ProcurementRequest and Project
+	   
 	     ProcurementRequest procurementRequest = procurementRequestService.findProcurementRequestById(dto.getRequestId());
 	     Project project = projectService.getProjectById(dto.getProjectId());
 
-	     // Set the project in the procurement request if not already set
 	     if (procurementRequest.getProject() == null) {
 	         procurementRequest.setProject(project);
 	     }
 
-	     // Set the ProcurementRequest and Project in BudgetAllocation
 	     budgetAllocation.setProcurementRequest(procurementRequest);
 	     budgetAllocation.setProject(project);
 
-	     // Update and save the BudgetAllocation
 	     return budgetAllocationRepository.save(budgetAllocation);
 	 }
 
@@ -190,10 +179,8 @@ public class BudgetAllocationService implements IBudgetAllocationService{
 	 @Override
 	 @Transactional
 	 public BudgetAllocationDTO updateBudgetAllocation(Long budgetId, BudgetAllocationDTO dto) {
-	     // Fetch the existing BudgetAllocation
 	     BudgetAllocation existingBudgetAllocation = getBudgetAllocationById(budgetId);
 	     
-	     // Fetch related entities if IDs are provided in the DTO
 	     ProcurementRequest procurementRequest = dto.getRequestId() != null
 	             ? procurementRequestRepository.findById(dto.getRequestId())
 	               .orElseThrow(() -> new IllegalArgumentException("Invalid procurement request ID"))
@@ -209,7 +196,7 @@ public class BudgetAllocationService implements IBudgetAllocationService{
 	               .orElseThrow(() -> new IllegalArgumentException("Invalid project ID"))
 	             : existingBudgetAllocation.getProject();
 
-	     // Update fields
+	    
 	     existingBudgetAllocation.setAllocatedAmount(dto.getAllocatedAmount());
 	     existingBudgetAllocation.setUsedBudget(dto.getUsedBudget());
 	     existingBudgetAllocation.setRemainingBudget(dto.getRemainingBudget());
@@ -221,16 +208,15 @@ public class BudgetAllocationService implements IBudgetAllocationService{
 	     existingBudgetAllocation.setFinancialReport(financialReport);
 	     existingBudgetAllocation.setProject(project);
 
-	     // Save the updated entity
+	   
 	     BudgetAllocation updatedBudgetAllocation = budgetAllocationRepository.save(existingBudgetAllocation);
 
-	     // Convert to DTO and return
+	    
 	     return toDTO(updatedBudgetAllocation);
 	 }
 	@Override
 	    public void deleteBudgetAllocation(Long budgetId) {
 	        BudgetAllocation budgetAllocation = getBudgetAllocationById(budgetId);
-	        // Add business logic for validation, authorization, etc.
 	        budgetAllocationRepository.delete(budgetAllocation);
 	    }
 	
@@ -262,33 +248,31 @@ public class BudgetAllocationService implements IBudgetAllocationService{
 	@Transactional
 	@Override
 	public void addExpenseToBudget(Long budgetId, Double expenseAmount) {
-	    // Fetch the budget allocation
+	    
 	    BudgetAllocation budget = budgetAllocationRepository.findById(budgetId)
 	            .orElseThrow(() -> new RuntimeException("Budget not found"));
 
-	    // Validate the expense amount
+	 
 	    if (expenseAmount < 0) {
 	        throw new IllegalArgumentException("Expense amount must be positive");
 	    }
 
-	    // Update the used budget
+	   
 	    Double newUsedBudget = budget.getUsedBudget() + expenseAmount;
 	    budget.setUsedBudget(newUsedBudget);
 
-	    // Update the remaining budget
+	  
 	    Double remainingBudget = budget.getAllocatedAmount() - newUsedBudget;
 	    budget.setRemainingBudget(remainingBudget);
 
-	    // Check for budget overrun
 	    if (remainingBudget < 0) {
 	        budget.setBudgetStatus(BudgetStatus.IN_DANGER);
-	    } else if (newUsedBudget > budget.getAllocatedAmount() * 0.9) { // Example threshold for danger status
+	    } else if (newUsedBudget > budget.getAllocatedAmount() * 0.9) { 
 	        budget.setBudgetStatus(BudgetStatus.IN_DANGER);
 	    } else {
-	        budget.setBudgetStatus(BudgetStatus.GOOD); // Assuming this is the default status
+	        budget.setBudgetStatus(BudgetStatus.GOOD); 
 	    }
 
-	    // Save the updated budget allocation
 	    budgetAllocationRepository.save(budget);
 	}
 

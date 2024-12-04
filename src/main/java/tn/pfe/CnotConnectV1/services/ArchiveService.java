@@ -51,27 +51,23 @@ public class ArchiveService implements IArchiveService {
     @Override
 
     public Archive archiveEntities(Long eventId, Long gameId, Long resultId) {
-        // Retrieve the entities to be archived
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found"));
         Game game = gameRepository.findById(gameId).orElseThrow(() -> new RuntimeException("Game not found"));
         Result result = resultRepository.findById(resultId).orElseThrow(() -> new RuntimeException("Result not found"));
 
-        // Create a new archive entity and set the archived entities
+       
         Archive archive = new Archive();
        // archive.setEvent(event);
       //  archive.setGame(game);
       //  archive.setResult(result);
         archive.setDate(LocalDate.now()); 
         archive.setName(event.getName());
-        // Save the archive entity
         archiveRepository.save(archive);
 
-        // Set the archive attribute of the entities
         event.setArchive(archive);
         game.setArchive(archive);
         result.setArchive(archive);
 
-        // Save the updated entities
         eventRepository.save(event);
         gameRepository.save(game);
         resultRepository.save(result);

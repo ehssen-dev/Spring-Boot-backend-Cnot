@@ -123,7 +123,6 @@ public class ProjectService implements IProjectService {
             throw new IllegalArgumentException("Project name is required.");
         }
 
-        // Fetch related entities by ID
         Department department = departmentRepository.findById(projectDTO.getDepartmentId())
                 .orElse(null);
         SolidarityOlympic solidarityOlympic = solidariteOlympiqueProgramRepository.findById(projectDTO.getSolidarityOlympicId())
@@ -131,7 +130,6 @@ public class ProjectService implements IProjectService {
         User requestedBy = userRepository.findById(projectDTO.getRequestedById())
                 .orElse(null);
 
-        // Create and populate the Project entity
         Project project = new Project();
         project.setProjectName(projectDTO.getProjectName());
         project.setDescription(projectDTO.getDescription());
@@ -145,7 +143,7 @@ public class ProjectService implements IProjectService {
         project.setReportSubmissionDate(projectDTO.getReportSubmissionDate());
         project.setDepartment(department);
         project.setSolidarityOlympic(solidarityOlympic);
-        // Handle the User association if necessary
+       
         // project.setRequestedBy(requestedBy);
 
         return projectRepository.save(project);
@@ -173,7 +171,6 @@ public class ProjectService implements IProjectService {
             throw new IllegalArgumentException("Project name is required.");
         }
 
-        // Fetch related entities by ID
         Department department = departmentRepository.findById(projectDTO.getDepartmentId())
                 .orElse(null);
         SolidarityOlympic solidarityOlympic = solidariteOlympiqueProgramRepository.findById(projectDTO.getSolidarityOlympicId())
@@ -181,7 +178,6 @@ public class ProjectService implements IProjectService {
         User requestedBy = userRepository.findById(projectDTO.getRequestedById())
                 .orElse(null);
 
-        // Update the existing project's fields
         existingProject.setProjectName(projectDTO.getProjectName());
         existingProject.setDescription(projectDTO.getDescription());
         existingProject.setStartDate(projectDTO.getStartDate());
@@ -194,7 +190,7 @@ public class ProjectService implements IProjectService {
         existingProject.setReportSubmissionDate(projectDTO.getReportSubmissionDate());
         existingProject.setDepartment(department);
         existingProject.setSolidarityOlympic(solidarityOlympic);
-        // Handle the User association if necessary
+       
         // existingProject.setRequestedBy(requestedBy);
 
         return projectRepository.save(existingProject);
@@ -208,13 +204,10 @@ public class ProjectService implements IProjectService {
         Department department = departmentRepository.findById(departmentId)
             .orElseThrow(() -> new ResourceNotFoundException("Department not found with id " + departmentId));
 
-        // Associate the project with the department
         project.setDepartment(department);
 
-        // Save the updated project
         Project updatedProject = projectRepository.save(project);
 
-        // Convert the updated project to a ProjectDTO and return it
         return toDTO(updatedProject);
     }
     @Override
@@ -224,10 +217,13 @@ public class ProjectService implements IProjectService {
 
     @Override
     public Project getProjectById(Long projectId) {
-        return projectRepository.findById(projectId)
+        Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with id: " + projectId));
+        
+        project.getBudgetAllocations().size(); 
+        
+        return project;
     }
-
     @Override
     public List<ProjectDTO> getAllProjects() {
         List<Project> projects = projectRepository.findAll();
@@ -240,10 +236,8 @@ public class ProjectService implements IProjectService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found with id " + projectId));
 
-        // Convert to DTO
         ProjectDTO projectDTO = toDTO(project);
 
-        // Convert related entities to DTOs and set them
         if (project.getBudgetAllocations() != null) {
             List<BudgetAllocationDTO> budgetAllocationDTOs = project.getBudgetAllocations().stream()
                 .map(this::toDTO)
@@ -307,7 +301,6 @@ public class ProjectService implements IProjectService {
         project.setIncludedInProgram(dto.getIncludedInProgram());
         project.setReportSubmissionDate(dto.getReportSubmissionDate());
         
-        // Set related entities if present
         if (dto.getDepartment() != null) {
             Department department = new Department();
             department.setDepartmentId(dto.getDepartment().getDepartmentId());
@@ -340,7 +333,6 @@ public class ProjectService implements IProjectService {
         dto.setIncludedInProgram(project.getIncludedInProgram());
         dto.setReportSubmissionDate(project.getReportSubmissionDate());
         
-        // Set related entities if present
         if (project.getDepartment() != null) {
             DepartmentDTO departmentDTO = new DepartmentDTO();
             departmentDTO.setDepartmentId(project.getDepartment().getDepartmentId());

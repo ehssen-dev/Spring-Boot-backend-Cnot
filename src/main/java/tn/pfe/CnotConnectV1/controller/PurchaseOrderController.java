@@ -1,4 +1,6 @@
 package tn.pfe.CnotConnectV1.controller;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import java.util.Optional;
 public class PurchaseOrderController {
 
     private final IPurchaseOrderService purchaseOrderService;
+    private static final Logger logger = LoggerFactory.getLogger(PurchaseOrderController.class);
 
     @Autowired
     public PurchaseOrderController(IPurchaseOrderService purchaseOrderService) {
@@ -31,11 +34,14 @@ public class PurchaseOrderController {
             PurchaseOrder createdPurchaseOrder = purchaseOrderService.createPurchaseOrder(purchaseOrderDTO);
             return new ResponseEntity<>(createdPurchaseOrder, HttpStatus.CREATED);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); // Handle known issues
+            logger.error("Error occurred: ", e);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); 
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); // Handle unexpected errors
+            logger.error("Unexpected error occurred: ", e);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); 
         }
     }
+
 
     @PutMapping("/update/{purchaseId}")
     public ResponseEntity<PurchaseOrder> updatePurchaseOrder(
@@ -44,9 +50,9 @@ public class PurchaseOrderController {
             PurchaseOrder updatedPurchaseOrder = purchaseOrderService.updatePurchaseOrder(purchaseId, purchaseOrderDTO);
             return new ResponseEntity<>(updatedPurchaseOrder, HttpStatus.OK);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // Handle known issues
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); // Handle unexpected errors
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); 
         }
     }
 
@@ -74,7 +80,7 @@ public class PurchaseOrderController {
             List<PurchaseOrder> purchaseOrders = purchaseOrderService.getAllPurchaseOrders();
             return new ResponseEntity<>(purchaseOrders, HttpStatus.OK);
         } catch (Exception e) {
-            e.printStackTrace(); // Log the stack trace for debugging
+            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

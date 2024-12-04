@@ -21,4 +21,6 @@ public interface IEventService {
 
 	Event updateEvent(Long eventId, EventDTO eventDTO);
 
+	String evaluateEventProgress();
+
 }

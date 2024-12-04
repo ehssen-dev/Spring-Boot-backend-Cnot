@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import tn.pfe.CnotConnectV1.dto.EventDTO;
 import tn.pfe.CnotConnectV1.entities.Event;
+import tn.pfe.CnotConnectV1.entities.Game;
 import tn.pfe.CnotConnectV1.services.EventService;
 
 import java.util.List;
@@ -74,4 +75,25 @@ public class EventController {
         boolean hasEnded = eventService.eventHasEnded(eventId);
         return ResponseEntity.ok(hasEnded);
     }
+    /**
+     * Endpoint to evaluate progress of all events.
+     *
+     * @return A response indicating the evaluation process has been completed.
+     */
+    @GetMapping("/evaluate")
+    public ResponseEntity<String> evaluateEventProgress() {
+        try {
+           
+            String evaluationSummary = eventService.evaluateEventProgress();
+            
+            return ResponseEntity.ok(evaluationSummary);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error during event progress evaluation: " + e.getMessage());
+        }
+    }
+
+
+
+    
 }

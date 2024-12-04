@@ -17,7 +17,7 @@ public class AttachmentSerializer extends JsonSerializer<Attachment> {
         gen.writeNumberField("id", attachment.getId());
         gen.writeStringField("fileName", attachment.getFileName());
         gen.writeStringField("fileType", attachment.getFileType());
-        gen.writeStringField("data", Base64.getEncoder().encodeToString(attachment.getData()));  // Encode byte data as Base64
+        gen.writeStringField("data", Base64.getEncoder().encodeToString(attachment.getData()));  
         gen.writeEndObject();
     }
 }

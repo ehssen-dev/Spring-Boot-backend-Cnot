@@ -40,7 +40,6 @@ public class DelegationService implements IDelegationService {
         delegation.setDelegationName(delegationDTO.getDelegationName());
         delegation.setCountry(delegationDTO.getCountry());
         delegation.setEmail(delegationDTO.getEmail());
-        // Add other properties if necessary
 
         Delegation createdDelegation = delegationRepository.save(delegation);
         return convertToDTO(createdDelegation);
@@ -53,7 +52,6 @@ public class DelegationService implements IDelegationService {
         existingDelegation.setDelegationName(delegationDTO.getDelegationName());
         existingDelegation.setCountry(delegationDTO.getCountry());
         existingDelegation.setEmail(delegationDTO.getEmail());
-        // Update other properties if necessary
 
         Delegation updatedDelegation = delegationRepository.save(existingDelegation);
         return convertToDTO(updatedDelegation);
@@ -65,7 +63,6 @@ public class DelegationService implements IDelegationService {
         dto.setDelegationName(delegation.getDelegationName());
         dto.setCountry(delegation.getCountry());
         dto.setEmail(delegation.getEmail());
-        // Set other properties if necessary
         return dto;
     }
 
@@ -75,7 +72,6 @@ public class DelegationService implements IDelegationService {
         delegation.setDelegationName(dto.getDelegationName());
         delegation.setCountry(dto.getCountry());
         delegation.setEmail(dto.getEmail());
-        // Set other properties if necessary
         return delegation;
     }
 

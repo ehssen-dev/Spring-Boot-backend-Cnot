@@ -13,9 +13,9 @@ public class CriteriaDTO {
     private Long id;
     private String name;
     private String description;
-    private String type; // Could be a specific type, e.g., "financial", "operational", etc.
+    private String type; //  "financial", "operational", ..
 
-    // Constructor to convert Criteria entity to DTO
+   
     public CriteriaDTO(Criteria criteria) {
         this.id = criteria.getId();
         this.name = criteria.getName();

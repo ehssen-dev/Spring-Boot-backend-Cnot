@@ -83,8 +83,8 @@ public class Game {
         if (athlete == null) {
             throw new IllegalArgumentException("Athlete cannot be null.");
         }
-        athletes.add(athlete); // Add the athlete to the set of athletes
-        athlete.setGame(this); // Ensure bidirectional relationship
+        athletes.add(athlete); 
+        athlete.setGame(this); 
     }
     
     /**
@@ -94,10 +94,24 @@ public class Game {
      */
     public void removeAthlete(Athlete athlete) {
         if (athlete != null && athletes.contains(athlete)) {
-            athletes.remove(athlete); // Remove the athlete from the set of athletes
-            athlete.setGame(null); // Clear the reference to this game from the athlete
+            athletes.remove(athlete); 
+            athlete.setGame(null); 
         }
     }
-    
-    
+ // Criteria for continuous tracking
+    public boolean isReadyForResult() {
+        return this.hasEnded() && result != null && result.getStatus() != null;
+    }
+    // Monitor game progress and check the status
+    public void evaluateGameProgress() {
+        if (hasEnded()) {
+            if (isReadyForResult()) {
+                System.out.println("Game " + this.name + " is complete and the result is ready.");
+            } else {
+                System.out.println("Game " + this.name + " ended, waiting for result.");
+            }
+        } else {
+            System.out.println("Game " + this.name + " is ongoing.");
+        }
+    }
 }

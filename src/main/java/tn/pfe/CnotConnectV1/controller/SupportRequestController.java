@@ -39,10 +39,8 @@ public class SupportRequestController {
             @PathVariable Long athleteId,
             @RequestBody SupportRequestDTO supportRequestDTO) {
 
-        // Call the service to create the support request
         SupportRequest supportRequest = supportRequestService.createSupportRequestFromAthlete(supportRequestDTO, athleteId);
 
-        // Return the created support request as a response
         return new ResponseEntity<>(supportRequest, HttpStatus.CREATED);
     }
 

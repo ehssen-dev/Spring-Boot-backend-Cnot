@@ -70,11 +70,8 @@ public class InvoiceService implements IInvoiceService{
        if (invoiceDTO.getProjectId() == null) {
            throw new IllegalArgumentException("Project ID must not be null");
        }
-
-       // Fetch the Project entity by ID
        Project project = projectService.getProjectById(invoiceDTO.getProjectId());
 
-       // Create and populate the Invoice entity
        Invoice invoice = new Invoice();
        invoice.setInvoiceDate(invoiceDTO.getInvoiceDate());
        invoice.setDueDate(invoiceDTO.getDueDate());
@@ -83,28 +80,23 @@ public class InvoiceService implements IInvoiceService{
        invoice.setStatus(InvoiceStatus.valueOf(invoiceDTO.getStatus()));
        invoice.setProject(project);
 
-       // Fetch all Purchase Orders related to the Project
        List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.findByProject_ProjectId(invoiceDTO.getProjectId());
 
        // Calculate the total amount from all Purchase Orders
        double totalAmount = purchaseOrders.stream()
-           .mapToDouble(PurchaseOrder::getTotalAmount) // Assuming PurchaseOrder has a method getAmount()
+           .mapToDouble(PurchaseOrder::getTotalAmount) 
            .sum();
 
-       // Set the total amount in the Invoice
        invoice.setTotalAmount(totalAmount);
 
-       // Set the Purchase Orders in the Invoice
        invoice.setPurchaseOrders(purchaseOrders);
        for (PurchaseOrder purchaseOrder : purchaseOrders) {
-           purchaseOrder.setInvoice(invoice); // Link each PurchaseOrder to this Invoice
+           purchaseOrder.setInvoice(invoice); 
        }
 
-       // Generate the Invoice Number
-       String generatedInvoiceNumber = generateInvoiceNumber(); // Assuming you have this method
+       String generatedInvoiceNumber = generateInvoiceNumber(); 
        invoice.setInvoiceNumber(generatedInvoiceNumber);
 
-       // Save the Invoice
        return invoiceRepository.save(invoice);
    }
 
@@ -131,7 +123,7 @@ public Invoice updateInvoice(Long invoiceId, InvoiceDTO invoiceDTO) {
     Invoice existingInvoice = invoiceRepository.findById(invoiceId)
             .orElseThrow(() -> new EntityNotFoundException("Invoice not found with id: " + invoiceId));
 
-    // Update fields
+   
     existingInvoice.setInvoiceNumber(invoiceDTO.getInvoiceNumber());
     existingInvoice.setTotalAmount(invoiceDTO.getTotalAmount());
     existingInvoice.setInvoiceDate(invoiceDTO.getInvoiceDate());
@@ -140,7 +132,6 @@ public Invoice updateInvoice(Long invoiceId, InvoiceDTO invoiceDTO) {
     existingInvoice.setDescription(invoiceDTO.getDescription());
     existingInvoice.setStatus(InvoiceStatus.valueOf(invoiceDTO.getStatus()));
 
-    // Update related entities
     if (invoiceDTO.getProjectId() != null) {
         Project project = projectService.getProjectById(invoiceDTO.getProjectId());
         existingInvoice.setProject(project);
@@ -162,11 +153,10 @@ public Invoice updateInvoice(Long invoiceId, InvoiceDTO invoiceDTO) {
         existingInvoice.setFinancialReport(null);
     }
 
-    // Update purchase orders
     if (invoiceDTO.getPurchaseOrderIds() != null) {
         List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.findAllById(invoiceDTO.getPurchaseOrderIds());
         for (PurchaseOrder purchaseOrder : purchaseOrders) {
-            purchaseOrder.setInvoice(existingInvoice); // Link each PurchaseOrder to this Invoice
+            purchaseOrder.setInvoice(existingInvoice); 
         }
         existingInvoice.setPurchaseOrders(purchaseOrders);
     } else {
@@ -177,7 +167,6 @@ public Invoice updateInvoice(Long invoiceId, InvoiceDTO invoiceDTO) {
 }
 
 @Override
-    // Read
     public List<Invoice> getAllInvoices() {
         return invoiceRepository.findAll();
     }
@@ -194,7 +183,6 @@ public InvoiceDTO getInvoiceDTOById(Long invoiceId) {
     if (invoiceOpt.isPresent()) {
         Invoice invoice = invoiceOpt.get();
 
-        // Convert Invoice entity to InvoiceDTO
         List<PurchaseOrderDTO> purchaseOrderDTOs = invoice.getPurchaseOrders().stream()
         		.map(po -> new PurchaseOrderDTO(
         			    po.getPurchaseId(),
@@ -218,7 +206,7 @@ public InvoiceDTO getInvoiceDTOById(Long invoiceId) {
             invoice.getDueDate(),
             invoice.isPaid(),
             invoice.getDescription(),
-            invoice.getStatus().name(), // Assuming InvoiceStatus is an enum and converting to String
+            invoice.getStatus().name(), 
             invoice.getBudget() != null ? invoice.getBudget().getBudgetId() : null,
             invoice.getFinancialReport() != null ? invoice.getFinancialReport().getFReportId() : null,
             invoice.getProject() != null ? invoice.getProject().getProjectId() : null,
@@ -230,7 +218,6 @@ public InvoiceDTO getInvoiceDTOById(Long invoiceId) {
 }
 
 @Override
-    // Delete
     public boolean deleteInvoice(Long invoiceId) {
     	 if (!invoiceRepository.existsById(invoiceId)) {
              throw new EntityNotFoundException("Invoice not found with id: " + invoiceId);
@@ -247,19 +234,14 @@ public InvoiceDTO getInvoiceDTOById(Long invoiceId) {
 		logger.info("Starting invoice processing");
         List<Invoice> pendingInvoices = invoiceRepository.findByStatus(InvoiceStatus.PENDING);
 
-        // Process each pending invoice
         for (Invoice invoice : pendingInvoices) {
-            // Validate the invoice
             if (validateInvoice(invoice)) {
-                // Match the invoice with purchase orders
                 List<PurchaseOrder> matchingPurchaseOrders = matchWithPurchaseOrders(invoice);
 
-                // If matching purchase orders found, mark the invoice as approved
                 if (!matchingPurchaseOrders.isEmpty()) {
                     invoice.setStatus(InvoiceStatus.APPROVED);
                     invoiceRepository.save(invoice);
 
-                    // Additional logic such as updating purchase orders, generating financial reports, etc.
                 }
             }
         }
@@ -275,15 +257,12 @@ public InvoiceDTO getInvoiceDTOById(Long invoiceId) {
     private List<PurchaseOrder> matchWithPurchaseOrders(Invoice invoice) {
         List<PurchaseOrder> purchaseOrders = invoice.getPurchaseOrders();
         if (purchaseOrders != null && !purchaseOrders.isEmpty()) {
-            // Collect unique suppliers associated with the invoice's purchase orders
             Set<Supplier> suppliers = purchaseOrders.stream()
                 .map(PurchaseOrder::getSupplier)
                 .collect(Collectors.toSet());
 
             List<PurchaseOrder> matchedPurchaseOrders = new ArrayList<>();
-            // Match each supplier's purchase orders
             for (Supplier supplier : suppliers) {
-                // Example matching logic
                 List<PurchaseOrder> matchedOrders = purchaseOrderService.getPurchaseOrdersBySupplierAndAmount(supplier, invoice.getTotalAmount());
                 matchedPurchaseOrders.addAll(matchedOrders);
             }

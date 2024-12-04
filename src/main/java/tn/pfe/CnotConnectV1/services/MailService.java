@@ -136,7 +136,7 @@ public class MailService implements IMailService {
                                  .collect(Collectors.toList());
 
         List<String> delegationEmails = delegationRepository.findAll().stream()
-                                           .map(Delegation::getEmail) // Assuming your Delegation entity has an email field
+                                           .map(Delegation::getEmail) 
                                            .collect(Collectors.toList());
 
         return new EntityEmailsDTO(athleteEmails, userEmails, delegationEmails);
@@ -157,7 +157,6 @@ public class MailService implements IMailService {
                                            .map(Delegation::getEmail)
                                            .collect(Collectors.toList());
 
-        // Combine all the emails into one list
         List<String> allEmails = new ArrayList<>();
         allEmails.addAll(athleteEmails);
         allEmails.addAll(userEmails);
@@ -169,7 +168,7 @@ public class MailService implements IMailService {
     @Override
     @Transactional
     public void sendMailsV(MailRequest mailRequest, List<MultipartFile> files) throws IOException, MessagingException {
-        // Create and save the mail entity
+        
         Mail mail = new Mail();
         mail.setSender(mailRequest.getSenderEmail());
         mail.setRecipient(mailRequest.getRecipient());
@@ -178,19 +177,15 @@ public class MailService implements IMailService {
         mail.setQualificationType(mailRequest.getQualificationType());
         mail.setStatus(MailStatus.NEW);
 
-        // Check if the recipient is an athlete
         athleteRepository.findByEmail(mailRequest.getRecipient())
                          .ifPresent(mail::setAthlete);
 
         Mail savedMail = mailRepository.save(mail);
 
-        // Handle file attachments
         saveAttachments(files, savedMail);
 
-        // Send the email
         sendEmailWithAttachments(mailRequest, files);
 
-        // Create and save audit log
         createAndSaveAuditLog(savedMail, mailRequest.getSenderEmail(), mailRequest.getRecipient());
     }
 
@@ -256,21 +251,19 @@ public class MailService implements IMailService {
             return;
         }
 
-        // Get the sender email directly from the mailRequest
-        String senderEmail = mailRequest.getSenderEmail(); // Get sender email from the request
+        String senderEmail = mailRequest.getSenderEmail(); 
 
         for (String recipientEmail : recipientEmails) {
             try {
-                // Prepare the email with attachments
+                
                 MimeMessage mimeMessage = javaMailSender.createMimeMessage();
                 MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 
-                helper.setFrom(senderEmail); // Set the sender email from the request
+                helper.setFrom(senderEmail);
                 helper.setTo(recipientEmail);
                 helper.setSubject(mailRequest.getSubject());
-                helper.setText(mailRequest.getContent(), true); // true indicates HTML content
+                helper.setText(mailRequest.getContent(), true); 
 
-                // Attach files if any
                 if (files != null && !files.isEmpty()) {
                     for (MultipartFile file : files) {
                         helper.addAttachment(file.getOriginalFilename(), file);
@@ -280,17 +273,15 @@ public class MailService implements IMailService {
                 javaMailSender.send(mimeMessage);
                 System.out.println("Email sent to " + recipientEmail + " successfully.");
 
-                // Save mail entry in the database
                 Mail mail = new Mail();
-                mail.setSender(senderEmail); // Set the sender email from the request
+                mail.setSender(senderEmail); 
                 mail.setRecipient(recipientEmail);
                 mail.setSubject(mailRequest.getSubject());
                 mail.setContent(mailRequest.getContent());
-                mail.setQualificationType(mailRequest.getQualificationType()); // Set the qualification type
+                mail.setQualificationType(mailRequest.getQualificationType()); 
                 mail.setStatus(MailStatus.NEW);
                 Mail savedMail = mailRepository.save(mail);
 
-                // Handle and save attachments
                 if (files != null && !files.isEmpty()) {
                     for (MultipartFile file : files) {
                         Attachment attachment = new Attachment();
@@ -301,11 +292,10 @@ public class MailService implements IMailService {
                         attachmentRepository.save(attachment);
                         savedMail.getAttachments().add(attachment);
                     }
-                    // Update the mail entity with attachments
+                   
                     mailRepository.save(savedMail);
                 }
 
-                // Create and save audit log
                 AuditLog auditLog = new AuditLog();
                 auditLog.setMailId(savedMail.getMailId().toString());
                 auditLog.setAction("SENT");
@@ -327,7 +317,7 @@ public class MailService implements IMailService {
     @Transactional
     @Override
     public void sendMailToAllAthletes(MailRequest mailRequest, List<MultipartFile> files) {
-        // Get all athlete emails
+      
         List<String> athleteEmails = athleteService.getAllEmails(); 
 
         if (athleteEmails.isEmpty()) {
@@ -335,37 +325,30 @@ public class MailService implements IMailService {
             return;
         }
 
-        // Get the sender email directly from the mailRequest
-        String senderEmail = mailRequest.getSenderEmail(); // Get sender email from the request
+        String senderEmail = mailRequest.getSenderEmail(); 
         if (senderEmail == null || senderEmail.isEmpty()) {
             throw new IllegalArgumentException("Sender email address must not be null or empty.");
         }
-
-        // Loop through each athlete's email to send them the mail
         for (String recipientEmail : athleteEmails) {
             try {
-                // Prepare the email with attachments
                 MimeMessage mimeMessage = javaMailSender.createMimeMessage();
                 MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 
-                // Set the sender and recipient
                 helper.setFrom(senderEmail);
                 helper.setTo(recipientEmail);
                 helper.setSubject(mailRequest.getSubject());
-                helper.setText(mailRequest.getContent(), true); // true indicates HTML content
+                helper.setText(mailRequest.getContent(), true);
 
-                // Attach files if any
                 if (files != null && !files.isEmpty()) {
                     for (MultipartFile file : files) {
                         helper.addAttachment(file.getOriginalFilename(), file);
                     }
                 }
-
-                // Send the email
+               
                 javaMailSender.send(mimeMessage);
                 System.out.println("Email sent to " + recipientEmail + " successfully.");
 
-                // Save the mail entry in the database
+                
                 Mail mail = new Mail();
                 mail.setSender(senderEmail);
                 mail.setRecipient(recipientEmail);
@@ -374,10 +357,9 @@ public class MailService implements IMailService {
                 mail.setQualificationType(mailRequest.getQualificationType());
                 mail.setStatus(MailStatus.NEW);
 
-                // Save the mail and obtain the savedMail reference
                 Mail savedMail = mailRepository.save(mail);
 
-                // Handle and save attachments
+               
                 if (files != null && !files.isEmpty()) {
                     for (MultipartFile file : files) {
                         Attachment attachment = new Attachment();
@@ -388,11 +370,10 @@ public class MailService implements IMailService {
                         attachmentRepository.save(attachment);
                         savedMail.getAttachments().add(attachment);
                     }
-                    // Update the mail entity with attachments
+                 
                     mailRepository.save(savedMail);
                 }
 
-                // Create and save audit log
                 AuditLog auditLog = new AuditLog();
                 auditLog.setMailId(savedMail.getMailId().toString());
                 auditLog.setAction("SENT");
@@ -425,7 +406,7 @@ public class MailService implements IMailService {
         }
 
         for (String recipientEmail : delegationEmails) {
-            // Create a new Mail entity for each recipient
+           
             Mail mail = new Mail();
             mail.setSender(senderEmail);
             mail.setRecipient(recipientEmail);
@@ -434,10 +415,9 @@ public class MailService implements IMailService {
             mail.setQualificationType(mailRequest.getQualificationType());
             mail.setStatus(MailStatus.NEW);
 
-            // Save the mail entity first
+           
             Mail savedMail = mailRepository.save(mail);
 
-            // Prepare and send email
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper;
             try {
@@ -445,20 +425,17 @@ public class MailService implements IMailService {
                 helper.setFrom(senderEmail);
                 helper.setTo(recipientEmail);
                 helper.setSubject(mailRequest.getSubject());
-                helper.setText(mailRequest.getContent(), true); // true indicates HTML content
-
-                // Attach files if provided
+                helper.setText(mailRequest.getContent(), true); 
+            
                 if (files != null && !files.isEmpty()) {
                     for (MultipartFile file : files) {
                         helper.addAttachment(file.getOriginalFilename(), file);
                     }
                 }
 
-                // Send email
                 javaMailSender.send(mimeMessage);
                 System.out.println("Email sent to " + recipientEmail + " successfully.");
 
-                // Save attachments
                 if (files != null && !files.isEmpty()) {
                     for (MultipartFile file : files) {
                         try {
@@ -473,11 +450,10 @@ public class MailService implements IMailService {
                             System.out.println("Error saving attachment: " + e.getMessage());
                         }
                     }
-                    // Update mail entity with attachments
+                  
                     mailRepository.save(savedMail);
                 }
 
-                // Create and save audit log
                 AuditLog auditLog = new AuditLog();
                 auditLog.setMailId(savedMail.getMailId().toString());
                 auditLog.setAction("SENT");
@@ -509,7 +485,7 @@ public class MailService implements IMailService {
         }
 
         for (String recipientEmail : userEmails) {
-            // Create a new Mail entity for each recipient
+          
             Mail mail = new Mail();
             mail.setSender(senderEmail);
             mail.setRecipient(recipientEmail);
@@ -518,10 +494,9 @@ public class MailService implements IMailService {
             mail.setQualificationType(mailRequest.getQualificationType());
             mail.setStatus(MailStatus.NEW);
 
-            // Save the mail entity first
+          
             Mail savedMail = mailRepository.save(mail);
 
-            // Prepare and send email
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper;
             try {
@@ -529,20 +504,17 @@ public class MailService implements IMailService {
                 helper.setFrom(senderEmail);
                 helper.setTo(recipientEmail);
                 helper.setSubject(mailRequest.getSubject());
-                helper.setText(mailRequest.getContent(), true); // true indicates HTML content
+                helper.setText(mailRequest.getContent(), true); 
 
-                // Attach files if provided
                 if (files != null && !files.isEmpty()) {
                     for (MultipartFile file : files) {
                         helper.addAttachment(file.getOriginalFilename(), file);
                     }
                 }
 
-                // Send email
                 javaMailSender.send(mimeMessage);
                 System.out.println("Email sent to " + recipientEmail + " successfully.");
 
-                // Save attachments
                 if (files != null && !files.isEmpty()) {
                     for (MultipartFile file : files) {
                         try {
@@ -557,11 +529,10 @@ public class MailService implements IMailService {
                             System.out.println("Error saving attachment: " + e.getMessage());
                         }
                     }
-                    // Update mail entity with attachments
+                   
                     mailRepository.save(savedMail);
                 }
 
-                // Create and save audit log
                 AuditLog auditLog = new AuditLog();
                 auditLog.setMailId(savedMail.getMailId().toString());
                 auditLog.setAction("SENT");
@@ -607,7 +578,6 @@ public class MailService implements IMailService {
                 String subject = mimeMessage.getSubject();
                 String content = getTextFromMessage(mimeMessage);
 
-                // Example of dynamic department retrieval based on subject or content
                 Department department = determineDepartment(subject, content);
 
                 Courrier courrier = new Courrier(
@@ -634,8 +604,7 @@ public class MailService implements IMailService {
     }
 
     private Department determineDepartment(String subject, String content) {
-        // Implement logic to determine department based on subject or content
-        // This is a placeholder for demonstration purposes
+        
         return departmentRepository.findById(1L).orElse(null);
     }
 

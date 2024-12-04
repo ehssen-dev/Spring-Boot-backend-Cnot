@@ -33,68 +33,61 @@ public class SupportRequestService  implements ISupportRequestService{
   
   @Override
   public SupportRequest createSupportRequestFromAthlete(SupportRequestDTO supportRequestDTO, Long athleteId) {
-      // Step 1: Find the Athlete entity
+ 
       Athlete athlete = athleteRepository.findById(athleteId)
               .orElseThrow(() -> new RuntimeException("Athlete not found"));
 
     
-      // Step 3: Create and populate the SupportRequest entity
       SupportRequest supportRequest = new SupportRequest();
       supportRequest.setSubject(supportRequestDTO.getSubject());
       supportRequest.setMontant(supportRequestDTO.getMontant());
       supportRequest.setJustification(supportRequestDTO.getJustification());
       supportRequest.setDescription(supportRequestDTO.getDescription());
       supportRequest.setPriority(supportRequestDTO.getPriority());
-      supportRequest.setStatus("Pending Review");  // Default status when created
+      supportRequest.setStatus("Pending Review"); 
+      supportRequest.setAttachments(supportRequestDTO.getAttachments());
 
       // No attachments now, so just skip this part
 
-      // Set the creation and update dates
+    
       LocalDate now = LocalDate.now();
       supportRequest.setCreatedDate(now);
       supportRequest.setUpdatedDate(now);
 
-      // Set the Athlete and Federation entities (Many-to-One relationships)
       supportRequest.setAthlete(athlete);
 
-      // Step 4: Save the SupportRequest entity
       SupportRequest savedRequest = supportRequestRepository.save(supportRequest);
 
-      // Step 5: Return the saved entity
       return savedRequest;
   }
 
 
   @Override
   public SupportRequest createSupportRequestFromFederation(SupportRequestDTO supportRequestDTO, Long federationId) {
-      // Fetch the federation from the database
+   
       Federation federation = federationRepository.findById(federationId)
               .orElseThrow(() -> new RuntimeException("Federation not found"));
 
-      // Create a new SupportRequest entity from the DTO
       SupportRequest supportRequest = new SupportRequest();
       supportRequest.setSubject(supportRequestDTO.getSubject());
       supportRequest.setMontant(supportRequestDTO.getMontant());
       supportRequest.setJustification(supportRequestDTO.getJustification());
       supportRequest.setDescription(supportRequestDTO.getDescription());
       supportRequest.setPriority(supportRequestDTO.getPriority());
-      supportRequest.setStatus("Pending Review"); // Set status to "Pending Review"
+      supportRequest.setStatus("Pending Review"); 
       supportRequest.setAttachments(supportRequestDTO.getAttachments());
       supportRequest.setCreatedDate(supportRequestDTO.getCreatedDate());
       supportRequest.setUpdatedDate(supportRequestDTO.getUpdatedDate());
       supportRequest.setFederation(federation);
 
-      // Save the SupportRequest entity
       return supportRequestRepository.save(supportRequest);
   }
   @Override
   public SupportRequest updateSupportRequest(SupportRequest request) throws ServiceException {
-    // Validate request data and existence
     if (request.getSupportRequestId() == null || !supportRequestRepository.existsById(request.getSupportRequestId())) {
       throw new ServiceException("Invalid request ID or request not found.");
     }
 
-    // Update the request object
     SupportRequest existingRequest = supportRequestRepository.findById(request.getSupportRequestId()).get();
     existingRequest.setSubject(request.getSubject());
     existingRequest.setMontant(request.getMontant());
@@ -103,7 +96,6 @@ public class SupportRequestService  implements ISupportRequestService{
     existingRequest.setPriority(request.getPriority());
     existingRequest.setAttachments(request.getAttachments());
 
-    // Save the updated request
     SupportRequest updatedRequest = supportRequestRepository.save(existingRequest);
 
     return updatedRequest;
@@ -162,7 +154,7 @@ public class SupportRequestService  implements ISupportRequestService{
       List<SupportRequestDTO> requestDTOs = new ArrayList<>();
 
       for (SupportRequest request : requests) {
-          // Map the SupportRequest entity to SupportRequestDTO
+          
           SupportRequestDTO dto = new SupportRequestDTO();
           dto.setSupportRequestId(request.getSupportRequestId());
           dto.setSubject(request.getSubject());
@@ -175,15 +167,13 @@ public class SupportRequestService  implements ISupportRequestService{
           dto.setCreatedDate(request.getCreatedDate());
           dto.setUpdatedDate(request.getUpdatedDate());
 
-          // Set Athlete and Federation IDs
           if (request.getAthlete() != null) {
-              dto.setAthleteId(request.getAthlete().getAthleteId()); // Assuming getId() method
+              dto.setAthleteId(request.getAthlete().getAthleteId()); 
           }
           if (request.getFederation() != null) {
-              dto.setFederationId(request.getFederation().getFederationId()); // Assuming getId() method
+              dto.setFederationId(request.getFederation().getFederationId()); 
           }
 
-          // Map support responses if needed
           List<SupportResponseDTO> responses = new ArrayList<>();
           for (SupportResponse response : request.getSupportResponses()) {
               SupportResponseDTO responseDTO = new SupportResponseDTO();
@@ -195,7 +185,6 @@ public class SupportRequestService  implements ISupportRequestService{
           }
           dto.setSupportResponses(responses);
 
-          // Add the DTO to the list
           requestDTOs.add(dto);
       }
 

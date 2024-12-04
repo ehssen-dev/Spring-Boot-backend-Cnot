@@ -29,6 +29,6 @@ public class DepartmentDTO {
 	    private String responsibilities;
 	    
 	    public DepartmentDTO(Long departmentId2, String name2) {
-			// TODO Auto-generated constructor stub
+			
 		}
 }

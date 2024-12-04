@@ -48,21 +48,22 @@ public class SupportResponseService  implements ISupportResponseService{
 	}
 @Override
 public SupportResponseDTO createSupportResponse(SupportResponseDTO supportResponseDTO) {
+   
     SupportResponse supportResponse = new SupportResponse();
     supportResponse.setMessage(supportResponseDTO.getMessage());
     supportResponse.setMontant(supportResponseDTO.getMontant());
 
-    // Decode each Base64 attachment string to byte[] and collect into a list
-    if (supportResponseDTO.getAttachments() != null) {
+    if (supportResponseDTO.getAttachments() != null && !supportResponseDTO.getAttachments().isEmpty()) {
         List<byte[]> decodedAttachments = supportResponseDTO.getAttachments().stream()
-            .map(Base64.getDecoder()::decode)
+            .map(Base64.getDecoder()::decode)  
             .collect(Collectors.toList());
-        supportResponse.setAttachments(decodedAttachments); // Assuming supportResponse can handle List<byte[]>
+        
+        supportResponse.setAttachments(decodedAttachments); 
     }
 
     supportResponse.setCreatedDate(supportResponseDTO.getCreatedDate());
 
-    // Retrieve the associated SupportRequest
+  
     SupportRequest supportRequest = supportRequestRepository.findById(supportResponseDTO.getSupportRequestId())
         .orElseThrow(() -> new RuntimeException("SupportRequest not found"));
     supportResponse.setSupportRequest(supportRequest);
@@ -74,12 +75,15 @@ public SupportResponseDTO createSupportResponse(SupportResponseDTO supportRespon
         supportResponse.setAthlete(athlete);
     }
 
+    // Save the SupportResponse entity to the database
     SupportResponse savedResponse = supportResponseRepository.save(supportResponse);
 
     // Convert the saved entity back to a DTO
     supportResponseDTO.setSupportResponseId(savedResponse.getSupportResponseId());
     return supportResponseDTO;
 }
+
+
 
 /*@Override
 public List<SupportResponse> getAllSupportResponses() {
@@ -156,7 +160,7 @@ public List<SupportResponseDTO> getAllSupportResponsesDTO() {
         responseDTOs.add(dto);
     }
 
-    return responseDTOs; // Return the list of DTOs
+    return responseDTOs;
 }
 
 

@@ -53,7 +53,6 @@ public class FileController {
             List<FileDetails> files = fileService.listFilesInPCloud();
             return ResponseEntity.ok(files);
         } catch (Exception e) {
-            // Handle any unexpected errors
             return ResponseEntity.status(500).body(null);
         }
     }

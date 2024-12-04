@@ -33,18 +33,16 @@ public class UserController {
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Convert roles to a list of strings
         List<String> roles = user.getRoles().stream()
-                                  .map(role -> role.getName().name()) // Convert ERole to String
+                                  .map(role -> role.getName().name())
                                   .collect(Collectors.toList());
 
-        // Extract the athlete ID if the user is linked to an athlete
+        
         Long athleteId = null;
         if (user.getAthlete() != null) {
             athleteId = user.getAthlete().getAthleteId();
         }
 
-        // Create the response object with username, roles, and athlete ID
         UserInfoResponse response = new UserInfoResponse(user.getUsername(), roles, athleteId);
 
         return ResponseEntity.ok(response);
@@ -53,7 +51,7 @@ public class UserController {
     
     @GetMapping("/{identifier}")
     public User getUserByIdentifier(@PathVariable String identifier) {
-        System.out.println("Fetching user with identifier: " + identifier); // Debug log
+        System.out.println("Fetching user with identifier: " + identifier); 
         return userRepository.findByIdentifier(identifier)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user identifier"));
     }
@@ -64,7 +62,6 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    // Endpoint to get a user by ID
     @GetMapping("/id/{id}")
     public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
         User user = userService.getUserById(id);
@@ -89,7 +86,7 @@ public class UserController {
     public class UserInfoResponse {
         private String username;
         private List<String> roles;
-        private Long athleteId; // Add athleteId
+        private Long athleteId; 
 
         public UserInfoResponse(String username, List<String> roles, Long athleteId) {
             this.username = username;

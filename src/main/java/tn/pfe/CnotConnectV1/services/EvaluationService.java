@@ -26,7 +26,6 @@ public class EvaluationService  implements IEvaluationService {
 	    @Override
 	    public CriteriaDTO createCriteria(CriteriaDTO criteriaDTO) {
 	        Criteria criteria = new Criteria();
-	        // Populate criteria entity with criteriaDTO data
 	        criteria.setName(criteriaDTO.getName());
 	        criteria.setDescription(criteriaDTO.getDescription());
 	        criteria.setType(criteriaDTO.getType());
@@ -40,7 +39,6 @@ public class EvaluationService  implements IEvaluationService {
 	        Criteria criteria = criteriaRepository.findById(criteriaId)
 	                .orElseThrow(() -> new ResourceNotFoundException("Criteria not found"));
 
-	        // Update criteria entity with new data from criteriaDTO
 	        criteria.setName(criteriaDTO.getName());
 	        criteria.setDescription(criteriaDTO.getDescription());
 	        criteria.setType(criteriaDTO.getType());
@@ -77,7 +75,6 @@ public class EvaluationService  implements IEvaluationService {
 	        Criteria criteria = criteriaRepository.findById(criteriaId)
 	                .orElseThrow(() -> new ResourceNotFoundException("Criteria not found"));
 
-	        // Assuming there is a relationship between Process and Criteria
 	        process.addCriteria(criteria);
 	        processRepository.save(process);
 	    }
@@ -87,8 +84,6 @@ public class EvaluationService  implements IEvaluationService {
 	    	Processes process = processRepository.findById(processId)
 	                .orElseThrow(() -> new ResourceNotFoundException("Process not found"));
 
-	        // Logic to track performance based on the provided data
-	        // This could involve updating metrics, recording results, etc.
 	        process.trackPerformance(performanceData);
 	        processRepository.save(process);
 	    }
@@ -98,10 +93,8 @@ public class EvaluationService  implements IEvaluationService {
 	    	Processes process = processRepository.findById(processId)
 	                .orElseThrow(() -> new ResourceNotFoundException("Process not found"));
 
-	        // Logic to generate evaluation report based on the process and date range
-	        // This could include calculating metrics, summarizing findings, etc.
 	        EvaluationReportDTO report = new EvaluationReportDTO();
-	        // Populate report with relevant data
+	       
 
 	        return report;
 	    }
@@ -111,10 +104,8 @@ public class EvaluationService  implements IEvaluationService {
 	        Criteria criteria = criteriaRepository.findById(criteriaId)
 	                .orElseThrow(() -> new ResourceNotFoundException("Criteria not found"));
 
-	        // Logic to generate KPI report based on criteria and date range
-	        // This could involve aggregating performance data, calculating KPIs, etc.
 	        KPIReportDTO kpiReport = new KPIReportDTO();
-	        // Populate KPI report with relevant data
+	        
 
 	        return kpiReport;
 	    }

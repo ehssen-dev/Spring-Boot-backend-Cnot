@@ -17,7 +17,6 @@ public class EventDTO {
     private LocalDate startEvent;
     private LocalDate endEvent;
     private String description;
-    private Long archiveId; // Assuming Archive has a unique ID
+    private Long archiveId; 
 
-    // You can add other fields as needed
 }

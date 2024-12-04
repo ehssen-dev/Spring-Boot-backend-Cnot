@@ -42,7 +42,6 @@ public class GameService implements IGameService {
         game.setStartGame(gameDTO.getStartGame());
         game.setEndGame(gameDTO.getEndGame());
 
-        // Fetch associated entities if IDs are provided
         if (gameDTO.getEventId() != null) {
             Event event = eventRepository.findById(gameDTO.getEventId()).orElse(null);
             game.setEvent(event);
@@ -52,10 +51,9 @@ public class GameService implements IGameService {
     
     @Override
     public Game updateGame(Long gameId, GameDTO gameDTO) {
-        // Find the existing game by ID
+       
         Game existingGame = gameRepository.findById(gameId).orElseThrow(() -> new ResourceNotFoundException("Game not found with id " + gameId));
-        
-        // Update the game's fields with the new values from the DTO
+       
         existingGame.setName(gameDTO.getName());
         existingGame.setDate(gameDTO.getDate());
         existingGame.setLocation(gameDTO.getLocation());
@@ -63,13 +61,11 @@ public class GameService implements IGameService {
         existingGame.setStartGame(gameDTO.getStartGame());
         existingGame.setEndGame(gameDTO.getEndGame());
 
-        // Update the event if the eventId is provided
         if (gameDTO.getEventId() != null) {
             Event event = eventRepository.findById(gameDTO.getEventId()).orElse(null);
             existingGame.setEvent(event);
         }
 
-        // Save the updated game back to the repository
         return gameRepository.save(existingGame);
     }
 
@@ -105,9 +101,9 @@ public class GameService implements IGameService {
         Athlete athlete = athleteRepository.findById(athleteId)
                 .orElseThrow(() -> new IllegalArgumentException("Athlete not found with ID: " + athleteId));
         
-        athlete.participateInGame(game);  // Link athlete to game
-        athleteRepository.save(athlete);  // Save changes to athlete
-        gameRepository.save(game);        // Save changes to game
+        athlete.participateInGame(game);  
+        athleteRepository.save(athlete);  
+        gameRepository.save(game);        
     }
 
     @Override
@@ -117,9 +113,9 @@ public class GameService implements IGameService {
         Athlete athlete = athleteRepository.findById(athleteId)
                 .orElseThrow(() -> new IllegalArgumentException("Athlete not found with ID: " + athleteId));
         
-        athlete.leaveGame();  // Unlink athlete from game
-        athleteRepository.save(athlete);  // Save changes to athlete
-        gameRepository.save(game);        // Save changes to game
+        athlete.leaveGame();  
+        athleteRepository.save(athlete); 
+        gameRepository.save(game);        
     }
     
     

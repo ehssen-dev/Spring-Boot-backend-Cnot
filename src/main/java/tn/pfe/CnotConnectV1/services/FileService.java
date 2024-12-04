@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 @Service
 public class FileService {
 
-    // Base path of your pCloud Drive (adjust the drive letter as needed)
-    private static final String PCLOUD_BASE_PATH = "P:/";  // Replace with the actual drive letter for pCloud
+    
+    private static final String PCLOUD_BASE_PATH = "P:/";  
 
     /**
      * Save a file to pCloud Drive
@@ -55,7 +55,7 @@ public class FileService {
 
         if (files != null) {
             return Arrays.stream(files)
-                .filter(File::isFile) // Only consider files, not directories
+                .filter(File::isFile) 
                 .map(file -> new FileDetails(
                     file.getName(),
                     file.length(),
@@ -63,7 +63,7 @@ public class FileService {
                 ))
                 .collect(Collectors.toList());
         } else {
-            return List.of(); // Return an empty list if directory is null
+            return List.of(); 
         }
     }
 }

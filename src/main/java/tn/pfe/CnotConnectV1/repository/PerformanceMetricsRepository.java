@@ -16,6 +16,7 @@ public interface PerformanceMetricsRepository  extends JpaRepository<Performance
 
 	//List<PerformanceMetrics> findByFederationId(Long federationId);
 
-	List<PerformanceMetrics> findByAthlete(Athlete athlete);
+	//List<PerformanceMetrics> findByAthlete(Athlete athlete);
+	Optional<PerformanceMetrics> findByAthlete(Athlete athlete);
 
 }

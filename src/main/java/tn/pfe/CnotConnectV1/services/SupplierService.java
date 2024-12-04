@@ -70,7 +70,7 @@ public Supplier findBestSupplier() {
                     supplier.getNumberOfPastIssues() == 0)
             .max(Comparator.comparingDouble(supplier -> 
                     supplier.getOnTimeDeliveryRate() * 0.5 + 
-                    supplier.getQualityControlRating() * 0.5)) // Adjust weights based on importance
+                    supplier.getQualityControlRating() * 0.5)) 
             .orElseThrow(() -> new NoSuchElementException("No suitable supplier found."));
 }
 
@@ -101,7 +101,6 @@ public Supplier updateSupplier(Long supplierId, SupplierDTO updatedSupplierDTO) 
     existingSupplier.setQualityControlRating(updatedSupplier.getQualityControlRating());
     existingSupplier.setNumberOfPastIssues(updatedSupplier.getNumberOfPastIssues());
 
-    // Save the updated supplier
     return supplierRepository.save(existingSupplier);
 }
 

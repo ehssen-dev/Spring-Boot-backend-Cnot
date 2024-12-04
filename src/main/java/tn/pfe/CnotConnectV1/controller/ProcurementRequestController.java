@@ -33,7 +33,7 @@ public class ProcurementRequestController {
         try {
         	 System.out.println("Received DTO: " + procurementRequestDTO);
             ProcurementRequest createdRequest = procurementRequestService.createProcurementRequest(procurementRequestDTO);
-            ProcurementRequestDTO responseDTO = procurementRequestService.mapToDTO(createdRequest); // Convert to DTO
+            ProcurementRequestDTO responseDTO = procurementRequestService.mapToDTO(createdRequest); 
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -112,16 +112,13 @@ public class ProcurementRequestController {
 
     // Approve or reject a request
     @PostMapping("/{requestId}/approve")
-    public ResponseEntity<String> approveRequest(@PathVariable Long requestId, @RequestParam boolean approved, @RequestParam String comments) {
+    public ResponseEntity<String> approveRequest(@PathVariable Long requestId ,@RequestBody String comments ) {
         try {
-        	procurementRequestService.processRequest(requestId, approved, comments);
-            if (approved) {
-                return ResponseEntity.ok("Request approved.");
-            } else {
-                return ResponseEntity.ok("Request rejected.");
-            }
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            ProcurementRequest request = procurementRequestService.findProcurementRequestById(requestId);
+        	procurementRequestService.approveStage(request, comments);
+            return ResponseEntity.ok("Request rejected successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

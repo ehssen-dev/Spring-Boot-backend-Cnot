@@ -47,12 +47,12 @@ public class MailController {
         try {
             List<Mail> mails = mailService.getMailsByAthleteId(athleteId);
             if (mails.isEmpty()) {
-                return ResponseEntity.noContent().build(); // 204 No Content if no emails found
+                return ResponseEntity.noContent().build(); 
             }
-            return ResponseEntity.ok(mails); // 200 OK with the list of mails
+            return ResponseEntity.ok(mails); 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body(null); // 500 Internal Server Error if something goes wrong
+                                 .body(null); 
         }
     }
 
@@ -68,17 +68,15 @@ public class MailController {
             @ModelAttribute @Valid MailRequest mailRequest,
             @RequestParam(value = "files", required = false) List<MultipartFile> files) {
         try {
-            // Validate sender email
+          
             if (mailRequest.getSenderEmail() == null || mailRequest.getSenderEmail().isEmpty()) {
                 return ResponseEntity.badRequest().body("Sender email is required.");
             }
 
-            // Validate recipient email
             if (mailRequest.getRecipient() == null || mailRequest.getRecipient().isEmpty()) {
                 return ResponseEntity.badRequest().body("Recipient email is required.");
             }
 
-            // Call service method to send the mail
             mailService.sendMailsV(mailRequest, files);
             return ResponseEntity.ok("Mail sent successfully.");
         } catch (Exception e) {
@@ -93,7 +91,7 @@ public class MailController {
             @ModelAttribute MailRequest mailRequest, 
             @RequestParam(value = "files", required = false) List<MultipartFile> files) {
         try {
-            // Call the service method with the updated parameters
+            
             mailService.sendMailToAllEntities(mailRequest, files);
             return ResponseEntity.ok("Emails sent successfully.");
         } catch (Exception e) {
@@ -108,11 +106,11 @@ public class MailController {
             @RequestParam(value = "files", required = false) List<MultipartFile> files) {
 
         try {
-            // Call the service method to send emails to all athletes with the provided mailRequest and files
+            
             mailService.sendMailToAllAthletes(mailRequest, files);
             return ResponseEntity.ok("Emails sent to all athletes successfully.");
         } catch (Exception e) {
-            // Return internal server error with the exception message if something goes wrong
+           
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                  .body("Failed to send emails to athletes: " + e.getMessage());
         }
@@ -129,7 +127,6 @@ public class MailController {
             @ModelAttribute MailRequest mailRequest,
             @RequestParam(required = false) List<MultipartFile> files) {
 
-        // Validate sender email
         if (senderEmail == null || senderEmail.isEmpty()) {
             return ResponseEntity.badRequest().body("Sender email address must not be null or empty.");
         }
@@ -149,7 +146,6 @@ public class MailController {
             @ModelAttribute MailRequest mailRequest,
             @RequestParam(required = false) List<MultipartFile> files) {
 
-        // Validate sender email
         if (senderEmail == null || senderEmail.isEmpty()) {
             return ResponseEntity.badRequest().body("Sender email address must not be null or empty.");
         }
@@ -192,14 +188,13 @@ public class MailController {
     @GetMapping("/all-em")
     public ResponseEntity<List<Mail>> getAllMails() {
         try {
-            List<Mail> mailDTOs = mailService.getAllMails(); // Assuming mailService returns List<MailDTO>
+            List<Mail> mailDTOs = mailService.getAllMails();
             if (mailDTOs.isEmpty()) {
-                return ResponseEntity.noContent().build(); // Return 204 No Content if empty
+                return ResponseEntity.noContent().build(); 
             }
             return ResponseEntity.ok(mailDTOs);
         } catch (Exception e) {
-            // Handle exception, log it, and return a meaningful error response
-            // For example, you might return a 500 Internal Server Error
+           
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -218,8 +213,8 @@ public class MailController {
     @DeleteMapping("/delete/{mailId}")
     public ResponseEntity<Void> deleteMail(@PathVariable("mailId") Long mailId) {
         try {
-            mailService.deleteMail(mailId); // Ensure this service method exists
-            return ResponseEntity.noContent().build(); // Return 204 No Content if successful
+            mailService.deleteMail(mailId); 
+            return ResponseEntity.noContent().build(); 
         } catch (Exception e) {
             logger.error("Error deleting mail with ID {}: {}", mailId, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

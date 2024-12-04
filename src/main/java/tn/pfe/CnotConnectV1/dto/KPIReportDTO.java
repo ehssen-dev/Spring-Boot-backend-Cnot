@@ -15,6 +15,6 @@ public class KPIReportDTO {
     private String criteriaName;
     private Date startDate;
     private Date endDate;
-    private BigDecimal kpiValue; // The KPI value calculated
-    private String comments; // Additional comments or insights
+    private BigDecimal kpiValue; 
+    private String comments;
 }

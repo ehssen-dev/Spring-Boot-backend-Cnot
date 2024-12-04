@@ -45,7 +45,7 @@ public class FederationService implements IFederationService{
 
     private String generateFederationNumber() {
         SecureRandom random = new SecureRandom();
-        StringBuilder sb = new StringBuilder(LENGTH + 2); // Adjusted to accommodate the extra character and hyphen
+        StringBuilder sb = new StringBuilder(LENGTH + 2); 
         sb.append('F');
         sb.append('-');
 

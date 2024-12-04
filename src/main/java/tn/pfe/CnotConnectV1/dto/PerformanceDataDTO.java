@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class PerformanceDataDTO {
     private Long processId;
     private Long criteriaId;
-    private BigDecimal value; // The performance value recorded
-    private LocalDateTime timestamp; // Time at which the data was recorded
+    private BigDecimal value; 
+    private LocalDateTime timestamp;
 }

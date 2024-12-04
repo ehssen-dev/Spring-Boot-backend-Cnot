@@ -24,8 +24,8 @@ public class PurchaseOrderDTO {
     private Double unitPrice;
     private Double totalAmount;
     private Date purchaseDate;
-    private Date expectedDeliveryDate; // Include this in the constructor if needed
-    private OrderStatus status; // Include this in the constructor if needed
+    private Date expectedDeliveryDate; 
+    private OrderStatus status; 
     private Long supplierId;
     private Long projectId;
     private Long invoiceId;

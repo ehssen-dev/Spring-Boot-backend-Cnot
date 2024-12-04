@@ -95,7 +95,7 @@ public class FinancialReportController {
         try {
             List<FinancialReport> reports = financialReportService.getFinancialReportsByProjectId(projectId);
             if (reports.isEmpty()) {
-                return ResponseEntity.noContent().build(); // Or customize the response for no content
+                return ResponseEntity.noContent().build(); 
             }
             return ResponseEntity.ok(reports);
         } catch (ResourceNotFoundException e) {

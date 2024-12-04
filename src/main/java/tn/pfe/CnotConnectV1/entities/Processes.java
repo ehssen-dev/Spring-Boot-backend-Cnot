@@ -55,31 +55,29 @@ public class Processes {
 
     // Method to track and update performance metrics
     public void trackPerformance(PerformanceDataDTO performanceData) {
-        // Log the incoming performance data
+      
         logger.info("Tracking performance for process {} with criteria {}: value = {}",
                 this.name, performanceData.getCriteriaId(), performanceData.getValue());
 
-        // Update the KPI value or other metrics based on the performance data
         updateKPI(performanceData.getValue());
 
-        // Additional logic for recording or reacting to performance data
-        // This could include updating status, triggering alerts, etc.
+       
         if (isCriticalPerformance(performanceData.getValue())) {
             logger.warn("Critical performance level detected for process {}: value = {}",
                     this.name, performanceData.getValue());
-            // Take necessary actions, such as notifications or escalations
+           
         }
     }
 
     // Helper method to update KPI value
     private void updateKPI(BigDecimal value) {
         this.kpiValue = value;
-        // Additional logic to aggregate, calculate or store KPI values
+       
     }
 
     // Helper method to check for critical performance levels
     private boolean isCriticalPerformance(BigDecimal value) {
-        BigDecimal criticalThreshold = new BigDecimal("1000"); // Example threshold
+        BigDecimal criticalThreshold = new BigDecimal("1000"); 
         return value.compareTo(criticalThreshold) > 0;
     }
     

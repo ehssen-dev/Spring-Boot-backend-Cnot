@@ -63,7 +63,21 @@ public class Result {
     }
     
     
-   
+    // Method to check if the result is complete
+    public boolean isComplete() {
+        return winner != null && runnerUp != null && thirdPlace != null;
+    }
+
+    // Evaluate result
+    public void evaluateResult() {
+        if (archived) {
+            System.out.println("Result for game " + game.getName() + " has been archived.");
+        } else if (isComplete()) {
+            System.out.println("Result for game " + game.getName() + " is complete and available.");
+        } else {
+            System.out.println("Result for game " + game.getName() + " is incomplete.");
+        }
+    }
     
     
 }

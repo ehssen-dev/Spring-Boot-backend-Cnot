@@ -1,9 +1,12 @@
 package tn.pfe.CnotConnectV1.services;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import tn.pfe.CnotConnectV1.dto.InvoiceDTO;
 import tn.pfe.CnotConnectV1.dto.ProcurementRequestDTO;
+import tn.pfe.CnotConnectV1.dto.ProjectDTO;
 import tn.pfe.CnotConnectV1.dto.PurchaseOrderDTO;
 import tn.pfe.CnotConnectV1.entities.Invoice;
 import tn.pfe.CnotConnectV1.entities.ProcurementRequest;
@@ -61,17 +65,15 @@ public class PurchaseOrderService implements IPurchaseOrderService{
     @Override
     public PurchaseOrder createPurchaseOrder(PurchaseOrderDTO dto) {
         try {
-            // Log DTO data
+            
             logger.debug("Creating purchase order with data: {}", dto);
 
-            // Fetch related entities
             Supplier supplier = supplierService.getSupplierById(dto.getSupplierId())
                     .orElseThrow(() -> new RuntimeException("Supplier not found with id: " + dto.getSupplierId()));
             
             Project project = projectService.getProjectById(dto.getProjectId());
             
             
-         
             PurchaseOrder purchaseOrder = new PurchaseOrder();
             
             String generatedOrderNumber = generateOrderNumber();
@@ -84,13 +86,12 @@ public class PurchaseOrderService implements IPurchaseOrderService{
             purchaseOrder.setPurchaseDate(dto.getPurchaseDate());
             purchaseOrder.setExpectedDeliveryDate(dto.getExpectedDeliveryDate());
             purchaseOrder.setStatus(dto.getStatus());
-            purchaseOrder.setSupplier(supplier);
+         //   purchaseOrder.setSupplier(supplier);
             purchaseOrder.setProject(project);
 
-            // Log the entity before saving
             logger.debug("Saving purchase order: {}", purchaseOrder);
 
-            // Save and return
+          
             return purchaseOrderRepository.save(purchaseOrder);
         } catch (Exception e) {
             logger.error("Error occurred while creating purchase order: ", e);
@@ -113,18 +114,16 @@ public class PurchaseOrderService implements IPurchaseOrderService{
 
     @Override
     public PurchaseOrder updatePurchaseOrder(Long purchaseId, PurchaseOrderDTO dto) {
-        // Check if the PurchaseOrder exists
+
         if (!purchaseOrderRepository.existsById(purchaseId)) {
             throw new RuntimeException("PurchaseOrder not found");
         }
 
-        // Fetch related entities if needed (supplier, project, invoice)
         Supplier supplier = supplierService.getSupplierById(dto.getSupplierId())
                 .orElseThrow(() -> new RuntimeException("Supplier not found"));
         Project project = projectService.getProjectById(dto.getProjectId());
         InvoiceDTO invoice = invoiceService.getInvoiceDTOById(dto.getInvoiceId());
 
-        // Map DTO data to the existing PurchaseOrder entity
         PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(purchaseId).get();
         purchaseOrder.setQuantity(dto.getQuantity());
         purchaseOrder.setPurchaseName(dto.getPurchaseName());
@@ -137,7 +136,6 @@ public class PurchaseOrderService implements IPurchaseOrderService{
         purchaseOrder.setProject(project);
         //purchaseOrder.setInvoice(dto.getInvoice());
 
-        // Save and return the updated PurchaseOrder
         return purchaseOrderRepository.save(purchaseOrder);
     }
 
@@ -156,11 +154,11 @@ public class PurchaseOrderService implements IPurchaseOrderService{
 	    try {
 	        return purchaseOrderRepository.findAll();
 	    } catch (Exception e) {
-	        e.printStackTrace(); // Log the exception
-	        throw e; // Re-throw to propagate it back to the controller
+	        e.printStackTrace(); 
+	        throw e; 
 	    }
 	}
-
+	
 	@Override
     public Optional<PurchaseOrder> getPurchaseOrderById(Long purchaseId) {
         return purchaseOrderRepository.findById(purchaseId);
@@ -177,26 +175,26 @@ public class PurchaseOrderService implements IPurchaseOrderService{
             purchaseOrderRepository.deleteById(purchaseId);
             return true;
         }
-        return false; // or throw an exception indicating the purchase order was not found
+        return false; 
     }
 
 	@Override
 	// Generate Purchase Orders Automatically
 	public void generatePurchaseOrders() {
-	    // Fetch pending procurement requests as DTOs
+	   
 	    List<ProcurementRequestDTO> pendingRequestDTOs = procurementRequestService.getPendingRequestsDTO();
 
 	    for (ProcurementRequestDTO requestDTO : pendingRequestDTOs) {
 	        try {
-	            // Find a suitable supplier
+	          
 	            Supplier supplier = findSuitableSupplier();
 	            if (supplier != null) {
-	                // Create a PurchaseOrder using the DTO
+	               
 	                PurchaseOrder purchaseOrder = createPurchaseOrderFromRequestDTO(requestDTO, supplier);
 	                if (purchaseOrder != null) {
-	                    // Save the PurchaseOrder to the repository
+	                   
 	                    purchaseOrderRepository.save(purchaseOrder);
-	                    // Update the status of the procurement request
+	                   
 	                    procurementRequestService.updateRequestStatus(requestDTO.getRequestId(), RequestStatus.APPROVED);
 	                } else {
 	                    logger.warn("Failed to create purchase order for request ID: {}", requestDTO.getRequestId());
@@ -221,12 +219,11 @@ public class PurchaseOrderService implements IPurchaseOrderService{
         Supplier selectedSupplier = suppliers.get(0);
 
         for (Supplier supplier : suppliers) {
-            // Evaluate the suitability of each supplier based on predefined criteria
-            // For example, consider on-time delivery rate, quality control rating, and number of past issues
+           
             if (supplier.getOnTimeDeliveryRate() >= 0.8 &&
                 supplier.getQualityControlRating() >= 4.0 &&
                 supplier.getNumberOfPastIssues() == 0) {
-                // Update selected supplier if it meets the criteria
+            
                 selectedSupplier = supplier;
                 
                 break;
@@ -244,8 +241,7 @@ public class PurchaseOrderService implements IPurchaseOrderService{
 	    }
 
 	    PurchaseOrder purchaseOrder = new PurchaseOrder();
-	    
-	    // Check for null values and handle accordingly
+	
 	    Integer quantity = requestDTO.getQuantity();
 	    if (quantity == null) {
 	        logger.warn("Quantity is null for procurement request ID: {}", requestDTO.getRequestId());
@@ -255,7 +251,6 @@ public class PurchaseOrderService implements IPurchaseOrderService{
 	    purchaseOrder.setPurchaseName(requestDTO.getRequestedGoods());
 	    purchaseOrder.setDescription(requestDTO.getDescription());
 	    
-	    // Set the expected delivery date (7 days from now)
 	    Calendar cal = Calendar.getInstance();
 	    cal.add(Calendar.DAY_OF_MONTH, 7);
 	    Date expectedDeliveryDate = cal.getTime();
@@ -278,10 +273,8 @@ public class PurchaseOrderService implements IPurchaseOrderService{
             return null;
         }
 
-        // Get the unit price from the ProcurementRequestDTO
         Double unitPrice = requestDTO.getEstimatedCost();
 
-        // Validate the unit price
         if (unitPrice == null) {
             logger.warn("Unit price (estimated cost) is null for ProcurementRequestDTO ID: {}", 
                 requestDTO.getRequestId());

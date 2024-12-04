@@ -15,6 +15,24 @@ public interface IPerformanceMetricsService {
 
 	void generatePerformanceMetricsForAthlete(Athlete athlete);
 
+	void calculateAndSaveMetricsAfterGame(Long gameId);
+
+	/**
+	 * Fetch all performance metrics for a specific athlete.
+	 * 
+	 * @param athleteId ID of the athlete
+	 * @return List of performance metrics
+	 * @throws IllegalArgumentException if the athlete is not found
+	 */
+	List<PerformanceMetrics> getMetricsByAthlete(Long athleteId);
+
+	/**
+	 * Fetch all performance metrics.
+	 * 
+	 * @return List of all PerformanceMetrics
+	 */
+	List<PerformanceMetrics> getAllMetrics();
+
     
 
 	

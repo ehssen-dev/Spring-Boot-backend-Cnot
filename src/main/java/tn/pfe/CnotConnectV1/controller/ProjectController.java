@@ -33,7 +33,7 @@ public class ProjectController {
 
     @PostMapping("/add")
     public ResponseEntity<ProjectDTO> createProject(@RequestBody ProjectDTO projectDTO) {
-        // Call the service method which handles DTO
+      
         ProjectDTO createdProjectDTO = projectService.saveProject(projectDTO);
         
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProjectDTO);

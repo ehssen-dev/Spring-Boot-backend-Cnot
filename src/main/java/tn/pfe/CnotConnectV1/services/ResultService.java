@@ -12,6 +12,7 @@ import tn.pfe.CnotConnectV1.services.interfaces.IResultService;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,8 +32,7 @@ public class ResultService implements IResultService {
     @Override
     public Result saveResult(ResultDTO resultDTO) {
         Result result = new Result();
-        
-        // Set properties from DTO
+     
         result.setWinner(resultDTO.getWinner());
         result.setRunnerUp(resultDTO.getRunnerUp());
         result.setThirdPlace(resultDTO.getThirdPlace());
@@ -42,7 +42,6 @@ public class ResultService implements IResultService {
         result.setResultDate(resultDTO.getResultDate() != null ? resultDTO.getResultDate() : LocalDateTime.now());
         result.setComments(resultDTO.getComments());
 
-        // Fetch and set the Game entity if needed
         if (resultDTO.getGameId() != null) {
             Game game = gameRepository.findById(resultDTO.getGameId())
                     .orElseThrow(() -> new RuntimeException("Game not found"));
@@ -74,7 +73,18 @@ public class ResultService implements IResultService {
 
     @Override
     public List<Result> getAllResults() {
-        return resultRepository.findAll();
+        List<Object[]> resultsWithGameNames = resultRepository.findAllWithGameNames();
+        List<Result> results = new ArrayList<>();
+        
+        for (Object[] resultData : resultsWithGameNames) {
+            Result result = (Result) resultData[0];
+            String gameName = (String) resultData[1];
+            
+            System.out.println("Game Name: " + gameName);
+            
+            results.add(result);
+        }
+        return results;
     }
 
     @Override

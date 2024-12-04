@@ -1,5 +1,6 @@
 package tn.pfe.CnotConnectV1.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,5 +13,6 @@ public interface GameRepository extends JpaRepository<Game,Long> {
 	List<Game> findByEvent(Event event);
     List<Game> findByArchive(Archive archive);
 	List<Game> findByAthletesContains(Athlete athlete);
+    List<Game> findByEndGameBetween(LocalDateTime startDateTime, LocalDateTime endDateTime);
 
 }

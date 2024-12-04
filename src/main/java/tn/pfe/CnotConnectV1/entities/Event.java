@@ -53,6 +53,22 @@ public class Event {
     public boolean hasEnded() {
         return LocalDate.now().isAfter(endEvent);
     }
-   
+    // Event evaluation method
+    public void evaluateEventProgress() {
+        int completedGames = 0;
+        int totalGames = games.size();
+
+        for (Game game : games) {
+            if (game.isReadyForResult()) {
+                completedGames++;
+            }
+        }
+
+        if (completedGames == totalGames) {
+            System.out.println("Event " + name + " is complete with all games finished.");
+        } else {
+            System.out.println("Event " + name + " is ongoing. " + completedGames + "/" + totalGames + " games are completed.");
+        }
+    }
     
 }

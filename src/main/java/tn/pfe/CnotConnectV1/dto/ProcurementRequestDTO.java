@@ -26,7 +26,7 @@ this.requestId = requestId;
 this.requestNumber = requestNumber;
 this.description = description;
 this.requestedDate = requestedDate;
-this.userIdentifier = userIdentifier; // Expecting String identifier
+this.userIdentifier = userIdentifier; 
 this.estimatedCost = estimatedCost;
 this.justification = justification;
 this.status = status;
@@ -56,9 +56,9 @@ this.quantity = quantity;
 
     private LocalDate approvalDate;
 
-    private Long projectId; // Ensure this is set
+    private Long projectId; 
 
-    private ProjectDTO project; // Make sure this has a non-null ID
+    private ProjectDTO project; 
 
     @NotNull
     private String requestedGoods;

@@ -48,7 +48,6 @@ public class ProcurementRequestService implements IProcurementRequestService{
 	        throw new IllegalArgumentException("DTO must not be null");
 	    }
 
-	    // Validate required fields in the DTO
 	    if (dto.getUserIdentifier() == null || dto.getUserIdentifier().isEmpty()) {
 	        throw new IllegalArgumentException("User identifier must be provided");
 	    }
@@ -74,7 +73,7 @@ public class ProcurementRequestService implements IProcurementRequestService{
 	    procurementRequest.setRequestNumber(requestNumber);
 	    procurementRequest.setRequestedDate(LocalDateTime.now());
 	    procurementRequest.setSubmissionDate(LocalDate.now());
-	    procurementRequest.setRequestedBy(requestedBy); // Set the User object based on the identifier
+	    procurementRequest.setRequestedBy(requestedBy);
 	    procurementRequest.setEstimatedCost(dto.getEstimatedCost());
 	    procurementRequest.setRequestedGoods(dto.getRequestedGoods());
 	    procurementRequest.setQuantity(dto.getQuantity());
@@ -82,7 +81,6 @@ public class ProcurementRequestService implements IProcurementRequestService{
 	    procurementRequest.setDescription(dto.getDescription());
 	    procurementRequest.setStatus(RequestStatus.PENDING);
 
-	    // Step 4: Save the entity
 	    return procurementRequestRepository.save(procurementRequest);
 	}
 
@@ -131,11 +129,9 @@ public class ProcurementRequestService implements IProcurementRequestService{
 	        throw new IllegalArgumentException("The given id must not be null!");
 	    }
 
-	    // Retrieve the existing ProcurementRequest
 	    ProcurementRequest existingRequest = procurementRequestRepository.findById(requestId)
 	            .orElseThrow(() -> new NoSuchElementException("Procurement request not found"));
 
-	    // Update only the provided attributes
 	    if (updatedRequest.getRequestedDate() != null) {
 	        existingRequest.setRequestedDate(updatedRequest.getRequestedDate());
 	        LocalDateTime currentDateTime = LocalDateTime.now();
@@ -172,7 +168,6 @@ public class ProcurementRequestService implements IProcurementRequestService{
 	        existingRequest.setApprovalDate(updatedRequest.getApprovalDate());
 	    }
 
-	    // Update the project reference if provided
 	    if (updatedRequest.getProjectId() != null) {
 	        Project project = projectRepository.findById(updatedRequest.getProjectId())
 	                .orElseThrow(() -> new NoSuchElementException("Project not found"));
@@ -222,7 +217,7 @@ public class ProcurementRequestService implements IProcurementRequestService{
         dto.setDescription(request.getDescription());
         dto.setQuantity(request.getQuantity());
         dto.setRequestedGoods(request.getRequestedGoods());
-        // Map other fields as necessary
+      
         return dto;
     }
     @Override
@@ -332,7 +327,7 @@ public class ProcurementRequestService implements IProcurementRequestService{
             request.getRequestedBy() != null ? request.getRequestedBy().getIdentifier() : null, // Use identifier
             request.getEstimatedCost(),
             request.getJustification(),
-            request.getStatus().toString(), // Convert enum to string
+            request.getStatus().toString(), 
             request.getSubmissionDate(),
             request.getApprovalDate(),
             request.getRequestedGoods(),

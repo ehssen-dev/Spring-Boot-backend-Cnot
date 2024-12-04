@@ -4,7 +4,7 @@ import java.time.Instant;
 
 public class FileDetails {
     private String name;
-    private long size; // Size in bytes
+    private long size; 
     private Instant lastModified;
 
     public FileDetails(String name, long size, Instant lastModified) {
@@ -13,7 +13,7 @@ public class FileDetails {
         this.lastModified = lastModified;
     }
 
-    // Getters and setters
+   
 
     public String getName() {
         return name;

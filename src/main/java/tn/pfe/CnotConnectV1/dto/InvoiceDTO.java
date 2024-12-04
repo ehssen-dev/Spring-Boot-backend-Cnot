@@ -23,10 +23,10 @@ public class InvoiceDTO {
     private Date dueDate;
     private boolean paid;
     private String description;
-    private String status; // Assuming it's a string representing the enum InvoiceStatus
-    private Long budgetId; // ID for the related BudgetAllocation entity
-    private Long financialReportId; // ID for the related FinancialReport entity
-    private Long projectId; // ID for the related Project entity
+    private String status; 
+    private Long budgetId; 
+    private Long financialReportId;
+    private Long projectId; 
     private List<PurchaseOrderDTO> purchaseOrders = new ArrayList<>();
     
     public List<Long> getPurchaseOrderIds() {
@@ -34,7 +34,6 @@ public class InvoiceDTO {
             .map(PurchaseOrderDTO::getPurchaseId)
             .collect(Collectors.toList());
     }
-    // Constructor to match the parameters you need
     public InvoiceDTO(Long invoiceId, String invoiceNumber, Double totalAmount, Date invoiceDate, Date dueDate,
                       boolean paid, String description, String status, Long budgetId, Long financialReportId,
                       Long projectId, List<PurchaseOrderDTO>purchaseOrders) {

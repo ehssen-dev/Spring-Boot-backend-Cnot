@@ -22,8 +22,8 @@ public class FinancialDTO {
     private double totalIncome;
     private double totalExpenditure;
     private double netIncome;
-    private List<InvoiceDTO> invoices; // Update this to List<InvoiceDTO>
-    private List<BudgetAllocationDTO> budgetAllocations; // Update this to List<BudgetAllocationDTO>
+    private List<InvoiceDTO> invoices; 
+    private List<BudgetAllocationDTO> budgetAllocations;
     private ProjectDTO project; 
 
 }

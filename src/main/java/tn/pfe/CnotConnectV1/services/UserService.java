@@ -29,7 +29,7 @@ public class UserService {
         if (user.getAthlete() != null) {
             Long athleteId = user.getAthlete().getAthleteId();
             System.out.println("Athlete ID: " + athleteId);
-            // Return or use the athleteId as needed
+           
         } else {
             System.out.println("No athlete associated with user ID: " + id);
         }
@@ -50,5 +50,7 @@ public class UserService {
         User user  = getUserById(userId);
         userRepository.delete(user);
     }
+    
+    
     
 }

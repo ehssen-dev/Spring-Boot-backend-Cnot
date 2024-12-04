@@ -1,8 +1,10 @@
 package tn.pfe.CnotConnectV1.services;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,15 +65,14 @@ public class FinancialReportService implements IFinancialReportService{
 
     @Override
     public Map<String, Double> getFinancialReportChartData(Long projectId, Date startDate, Date endDate) {
-        // Fetch data based on the provided dates and project ID
+     
         List<Invoice> invoices = invoiceRepository.findByInvoiceDateBetween(startDate, endDate);
         List<BudgetAllocation> budgetAllocations = budgetAllocationRepository.findByStartDateBetweenAndEndDateBetween(startDate, endDate, startDate, endDate);
 
-        // Calculate totals
         double totalIncome = invoices.stream().mapToDouble(Invoice::getTotalAmount).sum();
         double totalExpenditure = budgetAllocations.stream().mapToDouble(BudgetAllocation::getAllocatedAmount).sum();
 
-        // Prepare data for chart
+   
         Map<String, Double> chartData = new HashMap<>();
         chartData.put("Total Income", totalIncome);
         chartData.put("Total Expenditure", totalExpenditure);
@@ -81,11 +82,11 @@ public class FinancialReportService implements IFinancialReportService{
     
     @Override
     public List<FinancialReport> getFinancialReportsByProjectId(Long projectId) {
-        // Ensure the project exists
+     
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found with ID: " + projectId));
 
-        // Fetch the list of financial reports associated with the project
+     
         List<FinancialReport> financialReports = financialReportRepository.findByProject_ProjectId(projectId);
         
         if (financialReports.isEmpty()) {
@@ -107,7 +108,6 @@ public class FinancialReportService implements IFinancialReportService{
     
     @Override
     public FinancialDTO generateFinancialReportForPeriod(Date startDate, Date endDate, Long projectId) {
-        // Fetch data based on the provided dates and project ID
         List<Invoice> invoices = invoiceRepository.findByInvoiceDateBetween(startDate, endDate);
         List<BudgetAllocation> budgetAllocations = budgetAllocationRepository.findByStartDateBetweenAndEndDateBetween(startDate, endDate, startDate, endDate);
         Project project = projectService.getProjectById(projectId);
@@ -116,7 +116,6 @@ public class FinancialReportService implements IFinancialReportService{
             throw new ResourceNotFoundException("Project not found with ID: " + projectId);
         }
 
-        // Map entities to DTOs
         List<InvoiceDTO> invoiceDTOs = invoices.stream()
                                                 .map(this::convertToInvoiceDTO)
                                                 .collect(Collectors.toList());
@@ -127,28 +126,56 @@ public class FinancialReportService implements IFinancialReportService{
 
         ProjectDTO projectDTO = convertToProjectDTO(project);
 
-        // Create and populate the FinancialDTO
         FinancialDTO financialDTO = new FinancialDTO();
-        financialDTO.setReportDate(new Date()); // Set the current date
-        financialDTO.setReportPeriod(startDate.toString() + " - " + endDate.toString());
-        financialDTO.setReportType("Monthly");
+        financialDTO.setReportDate(new Date()); 
+        //financialDTO.setReportPeriod(startDate.toString() + " - " + endDate.toString());
+        String reportPeriod = formatDate(startDate) + " - " + formatDate(endDate);
+        financialDTO.setReportPeriod(reportPeriod);
+        String reportType = determineReportType(startDate, endDate);
+        financialDTO.setReportType(reportType);
         financialDTO.setInvoices(invoiceDTOs);
         financialDTO.setBudgetAllocations(budgetAllocationDTOs);
         financialDTO.setProject(projectDTO);
 
-        // Calculate financial metrics
+      
         calculateFinancialMetrics(financialDTO);
 
-        // Convert FinancialDTO to Financial entity and save it
-        FinancialReport financial = convertToFinancialEntity(financialDTO, project); // Pass the project here
+        FinancialReport financial = convertToFinancialEntity(financialDTO, project); 
         FinancialReport savedFinancialReport = financialRepository.save(financial);
 
-        // Set the report ID in the DTO after saving
+       
         financialDTO.setFReportId(savedFinancialReport.getFReportId());
 
         return financialDTO;
     }
+    private String formatDate(Date date) {
+      
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+        return dateFormat.format(date);
+    }
 
+    private String determineReportType(Date startDate, Date endDate) {
+        LocalDate start = convertToLocalDate(startDate);
+        LocalDate end = convertToLocalDate(endDate);
+
+        // Calculate the difference in days
+        long daysBetween = ChronoUnit.DAYS.between(start, end);
+
+        // Determine the report type based on the difference in days
+        if (daysBetween == 0) {
+            return "Daily";
+        } else if (daysBetween <= 7) {
+            return "Semaine";  // Weekly report
+        } else if (start.getMonth() == end.getMonth() && start.getYear() == end.getYear()) {
+            return "Monthly";  // Monthly report
+        } else {
+            return "Custom";  // Other custom period
+        }
+    }
+
+    private LocalDate convertToLocalDate(Date date) {
+        return new java.sql.Date(date.getTime()).toLocalDate();
+    }
     private FinancialReport convertToFinancialEntity(FinancialDTO financialDTO, Project project) {
         if (financialDTO == null) {
             return null;
@@ -162,7 +189,6 @@ public class FinancialReportService implements IFinancialReportService{
         financial.setTotalExpenditure(financialDTO.getTotalExpenditure());
         financial.setNetIncome(financialDTO.getNetIncome());
 
-        // Set the project directly from the parameter
         financial.setProject(project);
 
         return financial;
@@ -172,20 +198,17 @@ public class FinancialReportService implements IFinancialReportService{
         List<InvoiceDTO> invoices = financialDTO.getInvoices();
         List<BudgetAllocationDTO> budgetAllocations = financialDTO.getBudgetAllocations();
 
-        // Calculate total income from invoices
         double totalIncome = invoices.stream()
                                      .mapToDouble(InvoiceDTO::getTotalAmount)
                                      .sum();
 
-        // Calculate total expenditure from budget allocations
+       
         double totalExpenditure = budgetAllocations.stream()
                                                    .mapToDouble(BudgetAllocationDTO::getAllocatedAmount)
                                                    .sum();
 
-        // Calculate net income
-        double netIncome = totalIncome - totalExpenditure;
+        double netIncome = totalExpenditure - totalIncome ;
 
-        // Set the calculated metrics to the FinancialDTO
         financialDTO.setTotalIncome(totalIncome);
         financialDTO.setTotalExpenditure(totalExpenditure);
         financialDTO.setNetIncome(netIncome);
@@ -196,7 +219,6 @@ public class FinancialReportService implements IFinancialReportService{
     }
 
     private InvoiceDTO convertToInvoiceDTO(Invoice invoice) {
-        // Convert purchase orders to DTOs
         List<PurchaseOrderDTO> purchaseOrderDTOs = invoice.getPurchaseOrders() != null 
             ? invoice.getPurchaseOrders().stream()
                 .map(po -> new PurchaseOrderDTO(
@@ -208,7 +230,7 @@ public class FinancialReportService implements IFinancialReportService{
                     po.getUnitPrice(),
                     po.getTotalAmount(),
                     po.getPurchaseDate(),
-                    po.getExpectedDeliveryDate(), // Ensure all fields are correctly mapped
+                    po.getExpectedDeliveryDate(), 
                     po.getStatus(),
                     po.getSupplierId(),
                     po.getProjectId(),
@@ -245,8 +267,8 @@ public class FinancialReportService implements IFinancialReportService{
             budgetAllocation.getRemainingBudget(),
             budgetAllocation.getStartDate(),
             budgetAllocation.getEndDate(),
-            budgetAllocation.getBudgetStatus(), // Directly use the status string representation
-            budgetAllocation.getCategory() // Directly use the category string representation
+            budgetAllocation.getBudgetStatus(),
+            budgetAllocation.getCategory() 
         );
     }
 
@@ -255,7 +277,6 @@ public class FinancialReportService implements IFinancialReportService{
             return null;
         }
 
-        // Get the IDs of the Department and SolidarityOlympic
         Long departmentId = project.getDepartment() != null ? project.getDepartment().getDepartmentId() : null;
         Long solidarityOlympicId = project.getSolidarityOlympic() != null ? project.getSolidarityOlympic().getSolidarityOlympicId() : null;
 
@@ -263,16 +284,16 @@ public class FinancialReportService implements IFinancialReportService{
             project.getProjectId(),
             project.getProjectName(),
             project.getDescription(),
-            project.getStartDate(), // Directly use Date
-            project.getEndDate(), // Directly use Date
-            project.getValidationDate(), // Directly use Date
-            project.getStatus(), // Assuming this is an enum or a String
+            project.getStartDate(), 
+            project.getEndDate(), 
+            project.getValidationDate(), 
+            project.getStatus(), 
             project.getTechnicalReportSubmitted(),
             project.getFinancialReportSubmitted(),
             project.getIncludedInProgram(),
-            project.getReportSubmissionDate(), // Ensure this matches the type in ProjectDTO
-            departmentId, // Pass the department ID
-            solidarityOlympicId // Pass the solidarity olympic ID
+            project.getReportSubmissionDate(), 
+            departmentId,
+            solidarityOlympicId 
         );
     }
 

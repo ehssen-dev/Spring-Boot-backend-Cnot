@@ -74,7 +74,7 @@ public class AuthController {
     
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();    
     List<String> roles = userDetails.getAuthorities().stream()
-        .map(item -> item.getAuthority())
+        .map(item -> item.getAuthority()) 
         .collect(Collectors.toList());
 
     return ResponseEntity.ok(new JwtResponse(jwt, 
@@ -85,21 +85,18 @@ public class AuthController {
   }
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-      // Check if the username already exists
       if (userRepository.existsByUsername(signUpRequest.getUsername())) {
           return ResponseEntity
               .badRequest()
               .body(new MessageResponse("Error: Username is already taken!"));
       }
 
-      // Check if the email already exists
       if (userRepository.existsByEmail(signUpRequest.getEmail())) {
           return ResponseEntity
               .badRequest()
               .body(new MessageResponse("Error: Email is already in use!"));
       }
 
-      // Create new user's account
       User user = new User(signUpRequest.getUsername(),
                           signUpRequest.getEmail(),
                           encoder.encode(signUpRequest.getPassword()));
@@ -107,35 +104,32 @@ public class AuthController {
       Set<Role> roles = new HashSet<>();
       String rolePrefix = "U"; // Default prefix for USER
 
-      // Check if the email exists in the Athlete database
       Optional<Athlete> athleteOpt = athleteRepository.findByEmail(signUpRequest.getEmail());
       if (athleteOpt.isPresent()) {
-          // Assign the ROLE_ATHLETE to the user
+       
           Role athleteRole = roleRepository.findByName(ERole.ROLE_ATHLETE)
               .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
           roles.add(athleteRole);
           rolePrefix = "AT";
-          
-          // Link the athlete entity with the user
+        
           Athlete athlete = athleteOpt.get();
-          user.setAthlete(athlete); // Set the athlete object in the user
-          athlete.setUser(user); // Optionally, set the user in the athlete if bidirectional relationship is needed
+          user.setAthlete(athlete); 
+          athlete.setUser(user); 
       } else {
-          // Check if the email exists in the Delegation database
+          
           Optional<Delegation> delegationOpt = delegationRepository.findByEmail(signUpRequest.getEmail());
           if (delegationOpt.isPresent()) {
-              // Assign the ROLE_DELEGATION to the user
+             
               Role delegationRole = roleRepository.findByName(ERole.ROLE_DELEGATION)
                   .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
               roles.add(delegationRole);
               rolePrefix = "DE";
-              
-              // Link the delegation entity with the user
+             
               Delegation delegation = delegationOpt.get();
               user.setDelegation(delegation);
               delegation.setUser(user);
           } else {
-              // Assign other roles based on the signUpRequest
+              
               Set<String> strRoles = signUpRequest.getRole();
               if (strRoles == null) {
                   Role userRole = roleRepository.findByName(ERole.ROLE_USER)
@@ -179,7 +173,6 @@ public class AuthController {
           }
       }
 
-      // Generate identifier with the appropriate prefix
       String uniqueIdentifier = generateIdentifier(rolePrefix);
       user.setIdentifier(uniqueIdentifier);
 
@@ -195,7 +188,7 @@ public class AuthController {
   public static String generateIdentifier(String prefix) {
       StringBuilder identifier = new StringBuilder(prefix);
       for (int i = 0; i < LENGTH; i++) {
-          identifier.append(RANDOM.nextInt(10)); // Append a random digit
+          identifier.append(RANDOM.nextInt(10)); 
       }
       return identifier.toString();
   }

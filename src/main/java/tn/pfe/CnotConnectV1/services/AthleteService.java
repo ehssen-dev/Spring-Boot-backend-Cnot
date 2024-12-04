@@ -89,16 +89,13 @@ public class AthleteService  implements IAthleteService {
     @Override
 
     public void associateAthleteWithFederation(Long athleteId, Long federationId) {
-        // Fetch athlete and federation from the repositories
         Athlete athlete = athleteRepository.findById(athleteId)
             .orElseThrow(() -> new IllegalArgumentException("Athlete not found with ID: " + athleteId));
         Federation federation = federationRepository.findById(federationId)
             .orElseThrow(() -> new IllegalArgumentException("Federation not found with ID: " + federationId));
         
-        // Associate the athlete with the federation
         athlete.joinFederation(federation);
 
-        // Save the athlete to persist changes
         athleteRepository.save(athlete);
     }
     /**
@@ -119,7 +116,6 @@ public class AthleteService  implements IAthleteService {
 	@Override
 	 public AthleteDTO addAthlete(AthleteDTO athleteDTO) {
         try {
-            // Convert DTO to Entity
             Athlete athlete = new Athlete();
             athlete.setFirstName(athleteDTO.getFirstName());
             athlete.setLastName(athleteDTO.getLastName());
@@ -127,10 +123,8 @@ public class AthleteService  implements IAthleteService {
             athlete.setEmail(athleteDTO.getEmail());
             athlete.setSport(athleteDTO.getSport());
 
-            // Save the Athlete entity
             athlete = athleteRepository.save(athlete);
 
-            // Convert the saved entity back to DTO
             AthleteDTO savedAthleteDTO = new AthleteDTO(
                 athlete.getAthleteId(),
                 athlete.getFirstName(),
@@ -147,11 +141,9 @@ public class AthleteService  implements IAthleteService {
     }
 	@Override
 	public AthleteDTO updateAthlete(Long athleteId, AthleteDTO updatedAthleteDTO) {
-        // Retrieve the existing athlete by ID
         Athlete existingAthlete = athleteRepository.findById(athleteId)
                 .orElseThrow(() -> new RuntimeException("Athlete not found"));
 
-        // Update fields from DTO
         existingAthlete.setFirstName(updatedAthleteDTO.getFirstName());
         existingAthlete.setLastName(updatedAthleteDTO.getLastName());
         existingAthlete.setDateOfBirth(updatedAthleteDTO.getDateOfBirth());
@@ -159,10 +151,8 @@ public class AthleteService  implements IAthleteService {
         existingAthlete.setGender(updatedAthleteDTO.getGender());
         existingAthlete.setSport(updatedAthleteDTO.getSport());
 
-        // Save the updated athlete entity
         Athlete updatedAthlete = athleteRepository.save(existingAthlete);
 
-        // Convert updated entity to DTO
         AthleteDTO updatedAthleteDTOResponse = new AthleteDTO(
             updatedAthlete.getAthleteId(),
             updatedAthlete.getFirstName(),

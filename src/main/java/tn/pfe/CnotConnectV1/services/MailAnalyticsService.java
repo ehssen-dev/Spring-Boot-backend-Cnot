@@ -29,17 +29,14 @@ public class MailAnalyticsService implements IMailAnalyticsService{
     
     @Override
     public UsageReport generateUsageReport(LocalDate startDate, LocalDate endDate) {
-        // Convert LocalDate to LocalDateTime
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
         
         long totalMails = mailRepository.countMailsBetweenDates(startDate, endDate);
         double averageProcessingTime = calculateAverageProcessingTime(startDateTime, endDateTime);
         
-        // Adjusting mailTypeDistribution to correctly handle enum MailType
         Map<MailType, Long> mailTypeDistribution = mailRepository.getMailTypeDistribution(startDate, endDate);
         
-        // Assuming UsageReport has a constructor that accepts long, double, and a Map<MailType, Long>
         return new UsageReport(totalMails, averageProcessingTime, mailTypeDistribution);
     }
 

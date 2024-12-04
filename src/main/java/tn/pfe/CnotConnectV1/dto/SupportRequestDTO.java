@@ -24,6 +24,5 @@ public class SupportRequestDTO {
     
     private Long athleteId;
     private Long federationId;
-    private List<SupportResponseDTO> supportResponses; // Assuming you'd like to include the responses in the DTO as well
-
+    private List<SupportResponseDTO> supportResponses; 
 }

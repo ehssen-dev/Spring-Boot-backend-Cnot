@@ -20,7 +20,7 @@ public class AthleteDTO {
     private LocalDate dateOfBirth;
     private String email;
     private String sport;
-    private String city; // Added for city
+    private String city; 
     private Gender gender;
 
     public AthleteDTO(Long athleteId, String firstName, String lastName, LocalDate dateOfBirth, String city, Gender gender, String sport) {

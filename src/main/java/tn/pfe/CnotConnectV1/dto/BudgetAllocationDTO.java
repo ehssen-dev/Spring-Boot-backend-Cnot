@@ -13,17 +13,17 @@ import tn.pfe.CnotConnectV1.enums.Category;
 public class BudgetAllocationDTO {
 
     private Long budgetId;       
-    private String budgetNumber;  // ID of the budget allocation
-    private Double allocatedAmount;     // Amount allocated
-    private Double usedBudget = 0.0;;          // Amount used from the allocated budget
-    private Double remainingBudget;     // Remaining amount in the budget
-    private Date startDate;             // Start date of the budget allocation
-    private Date endDate;               // End date of the budget allocation
-    private BudgetStatus budgetStatus;  // Status of the budget (e.g., APPROVED, PENDING)
-    private Category category;          // Category of the budget (e.g., OPERATING, CAPITAL)
+    private String budgetNumber;  
+    private Double allocatedAmount;    
+    private Double usedBudget = 0.0;;        
+    private Double remainingBudget;     
+    private Date startDate;             
+    private Date endDate;              
+    private BudgetStatus budgetStatus;  
+    private Category category;          
     
-    private Long requestId;  // Associated Procurement Request ID
-    private Long financialReportId;      // Associated Financial Report ID
+    private Long requestId;  
+    private Long financialReportId;     
     private Long projectId; 
      
     public BudgetAllocationDTO(String budgetNumber, Double allocatedAmount, Double usedBudget, Double remainingBudget,
@@ -38,5 +38,5 @@ public class BudgetAllocationDTO {
 		this.category = category;
 		}
     
-    // Associated Project ID
+ 
 }

@@ -53,17 +53,14 @@ public class TechnicalReportController {
             @PathVariable Long tReportId,
             @RequestBody TechnicalReportDTO reportUpdateDTO) {
         try {
-            // Call the service method to update the report
+           
             TechnicalReportDTO updatedReportDTO = technicalReportService.updateTechnicalReport(tReportId, reportUpdateDTO);
             return ResponseEntity.ok(updatedReportDTO);
         } catch (ResourceNotFoundException e) {
-            // Return a 404 status if the report is not found
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
-            // Return a 400 status for bad request errors
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (RuntimeException e) {
-            // Return a 500 status for internal server errors
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
     }

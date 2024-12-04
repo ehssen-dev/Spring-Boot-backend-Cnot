@@ -44,10 +44,10 @@ public class BudgetAllocationController {
         } catch (BudgetAllocationNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null); // Bad request if IDs are invalid
+            return ResponseEntity.badRequest().body(null); 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null); // Internal server error for unexpected issues
+                    .body(null); 
         }
     }
 
@@ -109,7 +109,7 @@ public class BudgetAllocationController {
             BudgetAllocation allocatedBudget = budgetAllocationService.allocateBudgetB(dto);
             return ResponseEntity.ok(allocatedBudget);
         } catch (Exception e) {
-            // Handle exceptions as appropriate
+           
             return ResponseEntity.badRequest().body(null);
         }
     }
@@ -122,7 +122,7 @@ public class BudgetAllocationController {
             BudgetAllocation updatedBudgetAllocation = budgetAllocationService.allocateBudget(budgetId, dto);
             return ResponseEntity.ok(updatedBudgetAllocation);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null); // or handle the exception appropriately
+            return ResponseEntity.badRequest().body(null); 
         }
     }
     

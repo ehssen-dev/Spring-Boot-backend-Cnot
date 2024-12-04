@@ -14,6 +14,6 @@ public class EvaluationReportDTO {
     private String processName;
     private Date startDate;
     private Date endDate;
-    private String summary; // Summary of the evaluation
-    private String details; // Detailed report content
+    private String summary; 
+    private String details; 
 }
